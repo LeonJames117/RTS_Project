@@ -106,15 +106,15 @@ NavMeshSettings:
   m_BuildSettings:
     serializedVersion: 2
     agentTypeID: 0
-    agentRadius: 0.5
-    agentHeight: 2
-    agentSlope: 45
+    agentRadius: 2.22
+    agentHeight: 2.75
+    agentSlope: 26.5
     agentClimb: 0.4
     ledgeDropHeight: 0
     maxJumpAcrossDistance: 0
     minRegionArea: 2
     manualCellSize: 0
-    cellSize: 0.16666667
+    cellSize: 0.74
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
@@ -122,7 +122,57 @@ NavMeshSettings:
     preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: 4416737176c61a540a4e51adaa6a5794, type: 2}
+--- !u!1 &3025195
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3025197}
+  - component: {fileID: 3025196}
+  m_Layer: 0
+  m_Name: Pathfinding_Grid
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &3025196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3025195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee1d8dc7ce87425469b6424f2d642219, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Unwalkable:
+    serializedVersion: 2
+    m_Bits: 64
+  Grid_Size: {x: 500, y: 500}
+  Node_Rad: 0.5
+  Show_Debug: 1
+--- !u!4 &3025197
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3025195}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 544, y: 27.8, z: 527}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &263954386
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -194,8 +244,35 @@ PrefabInstance:
       propertyPath: m_Name
       value: Red Tank (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8164078558771037576, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
+--- !u!1 &352390647 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
+  m_PrefabInstance: {fileID: 1997828075}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &352390649
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 352390647}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 2.22
+  m_Height: 2.75
+  m_Direction: 1
+  m_Center: {x: 0, y: 2.1, z: 0}
 --- !u!1001 &551569760
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -267,8 +344,35 @@ PrefabInstance:
       propertyPath: m_Name
       value: Red Tank (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8164078558771037576, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
+--- !u!1 &554040270 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8164078558771037576, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
+  m_PrefabInstance: {fileID: 1388341362}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &554040272
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 554040270}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 2.22
+  m_Height: 2.75
+  m_Direction: 1
+  m_Center: {x: 0, y: 2.1, z: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -434,6 +538,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Red Tank (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8164078558771037576, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
 --- !u!1001 &1388341362
@@ -506,6 +618,14 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
       propertyPath: m_Name
       value: Red Tank
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8164078558771037576, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
@@ -741,6 +861,14 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
       propertyPath: m_Name
       value: Red Tank (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8164078558771037576, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 67a4a4f431705024d98f1000f431d2ce, type: 3}
