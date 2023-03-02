@@ -14,6 +14,7 @@ public class Pathfinding_Grid : MonoBehaviour
     int Grid_Length_X, Grid_Length_Y;
     private void OnDrawGizmos()
     {
+        //Debug Display
         Gizmos.DrawWireCube(transform.position, new Vector3(Grid_Size.x, 1, Grid_Size.y));
         if (Show_Debug)
         {
@@ -30,7 +31,7 @@ public class Pathfinding_Grid : MonoBehaviour
        
     }
     void Populate_Grid()
-    {
+    { //Add nodes to grid
         Grid_Array = new Node[Grid_Length_X, Grid_Length_Y];
         Vector3 Grid_Bottom_Left = transform.position - Vector3.right * Grid_Size.x / 2 - Vector3.forward * Grid_Size.y/2;
         for (int x = 0; x < Grid_Length_X; x++)
@@ -45,7 +46,7 @@ public class Pathfinding_Grid : MonoBehaviour
     }
 
     public Node Find_Node_By_Pos(Vector3 Pos)
-    {
+    {// Find a specfic node based on a positon input
         float X_Percent = (Pos.x + Grid_Length_X / 2 / Grid_Length_X);
         float Y_Percent = (Pos.z + Grid_Length_Y / 2 / Grid_Length_Y);
         X_Percent = Mathf.Clamp01(X_Percent);
