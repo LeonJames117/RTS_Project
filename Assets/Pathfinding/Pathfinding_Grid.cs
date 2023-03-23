@@ -12,6 +12,7 @@ public class Pathfinding_Grid : MonoBehaviour
 
     float Node_Diameter;
     int Grid_Length_X, Grid_Length_Y;
+    public List<Node> Path;
     private void OnDrawGizmos()
     {
         //Debug Display
@@ -23,6 +24,13 @@ public class Pathfinding_Grid : MonoBehaviour
                 foreach (Node node in Grid_Array)
                 {
                     Gizmos.color = (node.Walkable ? Color.green : Color.red);
+                    if (Path.Count > 0)
+                    {
+                        if (Path.Contains(node))
+                        {
+                            Gizmos.color = Color.black;
+                        }
+                    }
                     Gizmos.DrawCube(node.Pos, Vector3.one * (Node_Diameter - .1f));
                 }
             }
@@ -40,7 +48,7 @@ public class Pathfinding_Grid : MonoBehaviour
             {
                 Vector3 Node_Pos = Grid_Bottom_Left + Vector3.right * (x * Node_Diameter + Node_Rad) + Vector3.forward * (y + Node_Rad);
                 bool Obstructed = !Physics.CheckSphere(Node_Pos, Node_Rad,Unwalkable);
-                Grid_Array[x, y] = new Node(Obstructed, Node_Pos);
+                Grid_Array[x, y] = new Node(Obstructed, Node_Pos,x,y);
             }
         }
     }
@@ -60,6 +68,49 @@ public class Pathfinding_Grid : MonoBehaviour
         return Grid_Array[Grid_X,Grid_Y];
     }
 
+    public List<Node> Find_Node_Neighbours(Node Target)
+    {
+        List<Node> N_List = new List<Node>();
+        for (int x = -1; x <= -1; x++)
+        {
+            for (int y = -1; y <= -1; y++)
+            {
+                if (x == 0 && y == 0)
+                {
+                    continue;
+                }
+
+                int Current_X = Target.Grid_X + x;
+                int Current_Y = Target.Grid_Y + y;
+                
+                //Is node neighbour
+                if (Current_X >= 0 && Current_X < Grid_Size.x && Current_Y >= 0 && Current_Y < Grid_Size.y)
+                {
+                    N_List.Add(Grid_Array[Current_X, Current_Y]);
+                }
+
+
+
+            }
+        }
+        return N_List;
+    }
+
+    public int Distance_Between_Nodes(Node N_1,Node N_2)
+    {
+        int X_Distance = Mathf.Abs(N_1.Grid_X - N_2.Grid_X);
+        int Y_Distance = Mathf.Abs(N_1.Grid_Y - N_2.Grid_Y);
+
+        if(X_Distance > Y_Distance)
+        {
+            return 14 * Y_Distance - 10 * X_Distance - Y_Distance;
+        }
+        else
+        {
+            return 14 * X_Distance - 10 * Y_Distance - X_Distance;
+        }
+    }
+
     private void Start()    
     {
         Node_Diameter = Node_Rad * 2;
@@ -70,5 +121,20 @@ public class Pathfinding_Grid : MonoBehaviour
         
     }
 
-  
+
+    private void Update()
+    {
+        foreach (Node n in Grid_Array)
+        {
+            if (!Physics.CheckSphere(n.Pos, Node_Rad, Unwalkable))
+            {
+                n.Walkable = true;
+            }
+            else
+            {
+                n.Walkable = false;
+            }
+        }
+    }
+
 }
