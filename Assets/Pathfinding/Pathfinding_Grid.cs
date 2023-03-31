@@ -24,13 +24,23 @@ public class Pathfinding_Grid : MonoBehaviour
                 foreach (Node node in Grid_Array)
                 {
                     Gizmos.color = (node.Walkable ? Color.green : Color.red);
-                    if (Path.Count > 0)
-                    {
-                        if (Path.Contains(node))
+                    //if (Path != null)
+                    //{
+                        //print("Path not null");
+                        if (Path.Count > 0)
                         {
-                            Gizmos.color = Color.black;
+                            if (Path.Contains(node))
+                            {
+                                Gizmos.color = Color.black;
+                            }
                         }
+                    //}
+                    else
+                    {
+                        //print("Null Path");
                     }
+                        
+                    
                     Gizmos.DrawCube(node.Pos, Vector3.one * (Node_Diameter - .1f));
                 }
             }
@@ -55,13 +65,13 @@ public class Pathfinding_Grid : MonoBehaviour
 
     public Node Find_Node_By_Pos(Vector3 Pos)
     {// Find a specfic node based on a positon input
-        float X_Percent = (Pos.x + Grid_Length_X / 2 / Grid_Length_X);
-        float Y_Percent = (Pos.z + Grid_Length_Y / 2 / Grid_Length_Y);
+        float X_Percent = (Pos.x + Grid_Length_X / 2) / Grid_Length_X;
+        float Y_Percent = (Pos.z + Grid_Length_Y / 2) / Grid_Length_Y;
         X_Percent = Mathf.Clamp01(X_Percent);
         Y_Percent = Mathf.Clamp01(Y_Percent);
 
-        int Grid_X = (Grid_Length_X - 1) * (int)X_Percent;
-        int Grid_Y = (Grid_Length_Y - 1) * (int)Y_Percent;
+        int Grid_X = Mathf.RoundToInt((Grid_Length_X - 1) * X_Percent);
+        int Grid_Y = Mathf.RoundToInt((Grid_Length_Y - 1) * Y_Percent);
         Mathf.RoundToInt(Grid_X);
         Mathf.RoundToInt(Grid_Y);
 

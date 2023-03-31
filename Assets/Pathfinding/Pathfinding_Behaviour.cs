@@ -19,10 +19,10 @@ public class Pathfinding_Behaviour : MonoBehaviour
     { 
         List<Node> Path = new List<Node>();
         Node Current_Node = End;
-        //if(Current_Node == Start)
-        //{
-        //    print("Weird");
-        //}
+        if (Current_Node == Start)
+        {
+            print("Retrace set to start");
+        }
         while (Current_Node != Start)
         {
             Path.Add(Current_Node);
@@ -30,21 +30,21 @@ public class Pathfinding_Behaviour : MonoBehaviour
             print("Loop");
         }
         Path.Reverse();
-        //print(Path.Count);
+        print(Path.Count);
         Path_Grid.Path = Path;
     }
 
     void Find_New_Path(Vector3 Start, Vector3 Target)
     {
-        if(Start ==Target)
+        if(Start == Target)
         {
-            print("Wierd");
+            print("Start = Target");
         }
         Node StartN = Path_Grid.Find_Node_By_Pos(Start);
         Node TargetN = Path_Grid.Find_Node_By_Pos(Target);
 
-        print("StartN X= " + StartN.Grid_X + " Y = " + StartN.Grid_Y);
-        print("TargetN X= " + TargetN.Grid_X + " Y = " + TargetN.Grid_Y);
+        //print("StartN X= " + StartN.Grid_X + " Y = " + StartN.Grid_Y);
+        //print("TargetN X= " + TargetN.Grid_X + " Y = " + TargetN.Grid_Y);
 
         List<Node> Open_Nodes = new List<Node>();
         HashSet<Node> Closed_Nodes = new HashSet<Node>();
@@ -59,6 +59,7 @@ public class Pathfinding_Behaviour : MonoBehaviour
                 if (Open_Nodes[i].F_Cost < CurrentN.F_Cost || Open_Nodes[i].F_Cost == CurrentN.F_Cost && Open_Nodes[i].H_Cost < CurrentN.H_Cost)
                 {
                     CurrentN = Open_Nodes[i];
+                    print("Node x:" + CurrentN.Grid_X + " Y: " + CurrentN.Grid_Y + " Added to Path");
                 }
             }
             Open_Nodes.Remove(CurrentN);
@@ -67,13 +68,16 @@ public class Pathfinding_Behaviour : MonoBehaviour
             if (CurrentN == TargetN)
             {
                 Retrace_Found_Path(StartN, TargetN);
-                //print("Path Found");
+                Open_Nodes.Clear();
+                Closed_Nodes.Clear();
+                print("Path Found");
                 return;
             }
             foreach(Node Neighbour in Path_Grid.Find_Node_Neighbours(CurrentN))
             {
                 if(!Neighbour.Walkable && Closed_Nodes.Contains(Neighbour))
                 {
+                    print("Node not walkable");
                     continue;
                 }
 
@@ -86,7 +90,9 @@ public class Pathfinding_Behaviour : MonoBehaviour
 
                     if(!Open_Nodes.Contains(Neighbour))
                     {
+                        print("Node added to open list");
                         Open_Nodes.Add(Neighbour);
+
                     }
                 }
 
