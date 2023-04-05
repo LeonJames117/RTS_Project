@@ -16,7 +16,8 @@ public class Pathfinding_Behaviour : MonoBehaviour
         Find_New_Path(Seeker.position, Target.position);
     }
     void Retrace_Found_Path(Node Start, Node End)
-    { 
+    {
+        print("Retrace started"); 
         List<Node> Path = new List<Node>();
         Node Current_Node = End;
         if (Current_Node == Start)
@@ -27,10 +28,10 @@ public class Pathfinding_Behaviour : MonoBehaviour
         {
             Path.Add(Current_Node);
             Current_Node = Current_Node.Parent;
-            print("Loop");
+            
         }
         Path.Reverse();
-        print(Path.Count);
+        print("There are " + Path.Count + " Nodes in the path");
         Path_Grid.Path = Path;
     }
 
@@ -50,40 +51,49 @@ public class Pathfinding_Behaviour : MonoBehaviour
         HashSet<Node> Closed_Nodes = new HashSet<Node>();
 
         Open_Nodes.Add(StartN);
-
-        while(Open_Nodes.Count > 0)
+        
+        while (Open_Nodes.Count > 0)
         {
             Node CurrentN = Open_Nodes[0];
+            
             for (int i = 1; i < Open_Nodes.Count; i++)
             {
                 if (Open_Nodes[i].F_Cost < CurrentN.F_Cost || Open_Nodes[i].F_Cost == CurrentN.F_Cost && Open_Nodes[i].H_Cost < CurrentN.H_Cost)
                 {
                     CurrentN = Open_Nodes[i];
-                    print("Node x:" + CurrentN.Grid_X + " Y: " + CurrentN.Grid_Y + " Added to Path");
+                    //print("Node x:" + CurrentN.Grid_X + " Y: " + CurrentN.Grid_Y + " Added to Path");
+             
+                }
+                else
+                {
+                    //print("Node not suitable");
                 }
             }
             Open_Nodes.Remove(CurrentN);
             Closed_Nodes.Add(CurrentN);
+            //print("there are " + Open_Nodes.Count + " Open Nodes");
+           // print("There are " + Closed_Nodes.Count + " Closed Nodes");
 
             if (CurrentN == TargetN)
             {
                 Retrace_Found_Path(StartN, TargetN);
-                Open_Nodes.Clear();
-                Closed_Nodes.Clear();
+                
                 print("Path Found");
                 return;
             }
             foreach(Node Neighbour in Path_Grid.Find_Node_Neighbours(CurrentN))
             {
-                if(!Neighbour.Walkable && Closed_Nodes.Contains(Neighbour))
+                //print("Scanning Neighbours...");
+                if(!Neighbour.Walkable || Closed_Nodes.Contains(Neighbour))
                 {
-                    print("Node not walkable");
+                   // print("Neighbour not walkable");
                     continue;
                 }
 
                 int New_Move_Cost = CurrentN.G_Cost + Path_Grid.Distance_Between_Nodes(CurrentN, Neighbour);
                 if(New_Move_Cost < Neighbour.G_Cost || !Open_Nodes.Contains(Neighbour))
                 {
+                    //print("Possible Candidate found");
                     Neighbour.G_Cost = New_Move_Cost;
                     Neighbour.H_Cost = Path_Grid.Distance_Between_Nodes(Neighbour,TargetN);
                     Neighbour.Parent = CurrentN;

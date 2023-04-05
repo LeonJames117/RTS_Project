@@ -77,13 +77,13 @@ public class Pathfinding_Grid : MonoBehaviour
 
         return Grid_Array[Grid_X,Grid_Y];
     }
-
+    
     public List<Node> Find_Node_Neighbours(Node Target)
     {
         List<Node> N_List = new List<Node>();
-        for (int x = -1; x <= -1; x++)
+        for (int x = -1; x <= 1; x++)
         {
-            for (int y = -1; y <= -1; y++)
+            for (int y = -1; y <= 1; y++)
             {
                 if (x == 0 && y == 0)
                 {
