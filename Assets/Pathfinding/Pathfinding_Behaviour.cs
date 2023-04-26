@@ -26,10 +26,16 @@ public class Pathfinding_Behaviour : MonoBehaviour
         }
         while (Current_Node != Start)
         {
-            Path.Add(Current_Node);
-            Current_Node = Current_Node.Parent;
+            if(!Path.Contains(Current_Node))
+            {
+                Path.Add(Current_Node);
+                print("Node x:" + Current_Node.Grid_X + " Y: " + Current_Node.Grid_Y + "H: "+ Current_Node.H_Cost + " G: " + Current_Node.G_Cost + " F: " + Current_Node.F_Cost + " Added to Path");
+                Current_Node = Current_Node.Parent;
+            }
+            
             
         }
+        //Path.Add(Current_Node);
         Path.Reverse();
         print("There are " + Path.Count + " Nodes in the path");
         Path_Grid.Path = Path;
@@ -56,12 +62,12 @@ public class Pathfinding_Behaviour : MonoBehaviour
         {
             Node CurrentN = Open_Nodes[0];
             
-            for (int i = 1; i < Open_Nodes.Count; i++)
+            for (int i = 0; i < Open_Nodes.Count; i++)
             {
                 if (Open_Nodes[i].F_Cost < CurrentN.F_Cost || Open_Nodes[i].F_Cost == CurrentN.F_Cost && Open_Nodes[i].H_Cost < CurrentN.H_Cost)
                 {
                     CurrentN = Open_Nodes[i];
-                    //print("Node x:" + CurrentN.Grid_X + " Y: " + CurrentN.Grid_Y + " Added to Path");
+                    
              
                 }
                 else
@@ -70,18 +76,31 @@ public class Pathfinding_Behaviour : MonoBehaviour
                 }
             }
             Open_Nodes.Remove(CurrentN);
-            Closed_Nodes.Add(CurrentN);
+            if (!Closed_Nodes.Contains(CurrentN))
+            {
+                Closed_Nodes.Add(CurrentN);
+                
+            }
+            else
+            {
+                print("Duplicate Node");
+            }
+            
             //print("there are " + Open_Nodes.Count + " Open Nodes");
-           // print("There are " + Closed_Nodes.Count + " Closed Nodes");
+            //print("There are " + Closed_Nodes.Count + " Closed Nodes");
 
             if (CurrentN == TargetN)
             {
                 Retrace_Found_Path(StartN, TargetN);
-                
+                Open_Nodes.Clear();
+                Closed_Nodes.Clear();
                 print("Path Found");
                 return;
             }
-            foreach(Node Neighbour in Path_Grid.Find_Node_Neighbours(CurrentN))
+
+            List<Node> N_List = Path_Grid.Find_Node_Neighbours(CurrentN);
+
+            foreach (Node Neighbour in N_List)
             {
                 //print("Scanning Neighbours...");
                 if(!Neighbour.Walkable || Closed_Nodes.Contains(Neighbour))
@@ -94,13 +113,13 @@ public class Pathfinding_Behaviour : MonoBehaviour
                 if(New_Move_Cost < Neighbour.G_Cost || !Open_Nodes.Contains(Neighbour))
                 {
                     //print("Possible Candidate found");
-                    Neighbour.G_Cost = New_Move_Cost;
-                    Neighbour.H_Cost = Path_Grid.Distance_Between_Nodes(Neighbour,TargetN);
+                    Neighbour.G_Cost = Mathf.Abs(New_Move_Cost);
+                    Neighbour.H_Cost = Mathf.Abs(Path_Grid.Distance_Between_Nodes(Neighbour,TargetN));
                     Neighbour.Parent = CurrentN;
 
                     if(!Open_Nodes.Contains(Neighbour))
                     {
-                        print("Node added to open list");
+                        //print("Node added to open list");
                         Open_Nodes.Add(Neighbour);
 
                     }

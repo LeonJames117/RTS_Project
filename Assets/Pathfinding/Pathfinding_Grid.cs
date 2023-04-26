@@ -24,9 +24,7 @@ public class Pathfinding_Grid : MonoBehaviour
                 foreach (Node node in Grid_Array)
                 {
                     Gizmos.color = (node.Walkable ? Color.green : Color.red);
-                    //if (Path != null)
-                    //{
-                        //print("Path not null");
+                   
                         if (Path.Count > 0)
                         {
                             if (Path.Contains(node))
@@ -34,13 +32,7 @@ public class Pathfinding_Grid : MonoBehaviour
                                 Gizmos.color = Color.black;
                             }
                         }
-                    //}
-                    else
-                    {
-                        //print("Null Path");
-                    }
-                        
-                    
+
                     Gizmos.DrawCube(node.Pos, Vector3.one * (Node_Diameter - .1f));
                 }
             }
@@ -77,9 +69,10 @@ public class Pathfinding_Grid : MonoBehaviour
 
         return Grid_Array[Grid_X,Grid_Y];
     }
-    
+
     public List<Node> Find_Node_Neighbours(Node Target)
     {
+        //print("Target Node: X-" + Target.Grid_X + " Y-" + Target.Grid_Y);
         List<Node> N_List = new List<Node>();
         for (int x = -1; x <= 1; x++)
         {
@@ -92,17 +85,41 @@ public class Pathfinding_Grid : MonoBehaviour
 
                 int Current_X = Target.Grid_X + x;
                 int Current_Y = Target.Grid_Y + y;
-                
+
                 //Is node neighbour
                 if (Current_X >= 0 && Current_X < Grid_Size.x && Current_Y >= 0 && Current_Y < Grid_Size.y)
                 {
+                    //print("Node: X-" + Current_X + " Y-" + Current_Y + " Is Neighbour");
                     N_List.Add(Grid_Array[Current_X, Current_Y]);
                 }
-
-
-
             }
         }
+
+        //if (Target.Grid_X > 0) // Nodes to the left
+        //{
+        //    N_List.Add(Grid_Array[Target.Grid_X - 1, Target.Grid_Y]);
+        //    N_List.Add(Grid_Array[Target.Grid_X - 1, Target.Grid_Y + 1]);
+        //    N_List.Add(Grid_Array[Target.Grid_X - 1, Target.Grid_Y - 1]);
+        //}
+        //if (Target.Grid_X < Grid_Length_X - 1) // Nodes to the right
+        //{
+        //    N_List.Add(Grid_Array[Target.Grid_X + 1, Target.Grid_Y]);
+        //    N_List.Add(Grid_Array[Target.Grid_X + 1, Target.Grid_Y + 1]);
+        //    N_List.Add(Grid_Array[Target.Grid_X + 1, Target.Grid_Y - 1]);
+        //}
+        //if (Target.Grid_Y > 0) // Nodes below
+        //{
+        //    N_List.Add(Grid_Array[Target.Grid_X, Target.Grid_Y - 1]);
+        //    N_List.Add(Grid_Array[Target.Grid_X - 1, Target.Grid_Y - 1]);
+        //    N_List.Add(Grid_Array[Target.Grid_X + 1, Target.Grid_Y - 1]);
+        //}
+        //if (Target.Grid_Y < Grid_Length_Y - 1) // Nodes above
+        //{
+        //    N_List.Add(Grid_Array[Target.Grid_X, Target.Grid_Y + 1]);
+        //    N_List.Add(Grid_Array[Target.Grid_X - 1, Target.Grid_Y + 1]);
+        //    N_List.Add(Grid_Array[Target.Grid_X + 1, Target.Grid_Y + 1]);
+        //}
+
         return N_List;
     }
 
