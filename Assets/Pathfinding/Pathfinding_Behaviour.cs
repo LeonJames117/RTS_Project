@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Diagnostics;
 public class Pathfinding_Behaviour : MonoBehaviour
 {
     Pathfinding_Grid Path_Grid;
@@ -15,76 +15,28 @@ public class Pathfinding_Behaviour : MonoBehaviour
     {
         Find_New_Path(Seeker.position, Target.position);
     }
-    void Retrace_Found_Path(Node Start, Node End)
-    {
-        print("Retrace started"); 
-        List<Node> Path = new List<Node>();
-        Node Current_Node = End;
-        if (Current_Node == Start)
-        {
-            print("Retrace set to start");
-        }
-        while (Current_Node != Start)
-        {
-            if(!Path.Contains(Current_Node))
-            {
-                Path.Add(Current_Node);
-                print("Node x:" + Current_Node.Grid_X + " Y: " + Current_Node.Grid_Y + "H: "+ Current_Node.H_Cost + " G: " + Current_Node.G_Cost + " F: " + Current_Node.F_Cost + " Added to Path");
-                Current_Node = Current_Node.Parent;
-            }
-            
-            
-        }
-        //Path.Add(Current_Node);
-        Path.Reverse();
-        print("There are " + Path.Count + " Nodes in the path");
-        Path_Grid.Path = Path;
-    }
+    
 
     void Find_New_Path(Vector3 Start, Vector3 Target)
     {
-        if(Start == Target)
-        {
-            print("Start = Target");
-        }
+        Stopwatch SW = new Stopwatch();
+        SW.Start();
         Node StartN = Path_Grid.Find_Node_By_Pos(Start);
         Node TargetN = Path_Grid.Find_Node_By_Pos(Target);
 
         //print("StartN X= " + StartN.Grid_X + " Y = " + StartN.Grid_Y);
         //print("TargetN X= " + TargetN.Grid_X + " Y = " + TargetN.Grid_Y);
 
-        List<Node> Open_Nodes = new List<Node>();
+        Heap<Node> Open_Nodes = new Heap<Node>(Path_Grid.Node_Num);
         HashSet<Node> Closed_Nodes = new HashSet<Node>();
 
         Open_Nodes.Add(StartN);
         
         while (Open_Nodes.Count > 0)
         {
-            Node CurrentN = Open_Nodes[0];
-            
-            for (int i = 0; i < Open_Nodes.Count; i++)
-            {
-                if (Open_Nodes[i].F_Cost < CurrentN.F_Cost || Open_Nodes[i].F_Cost == CurrentN.F_Cost && Open_Nodes[i].H_Cost < CurrentN.H_Cost)
-                {
-                    CurrentN = Open_Nodes[i];
-                    
-             
-                }
-                else
-                {
-                    //print("Node not suitable");
-                }
-            }
-            Open_Nodes.Remove(CurrentN);
-            if (!Closed_Nodes.Contains(CurrentN))
-            {
-                Closed_Nodes.Add(CurrentN);
-                
-            }
-            else
-            {
-                print("Duplicate Node");
-            }
+            Node CurrentN = Open_Nodes.Remove_First_Item();
+            Closed_Nodes.Add(CurrentN);
+           
             
             //print("there are " + Open_Nodes.Count + " Open Nodes");
             //print("There are " + Closed_Nodes.Count + " Closed Nodes");
@@ -92,9 +44,9 @@ public class Pathfinding_Behaviour : MonoBehaviour
             if (CurrentN == TargetN)
             {
                 Retrace_Found_Path(StartN, TargetN);
-                Open_Nodes.Clear();
-                Closed_Nodes.Clear();
-                print("Path Found");
+               
+                SW.Stop();
+                print("Path Found in " + SW.ElapsedMilliseconds + " Ms");
                 return;
             }
 
@@ -129,5 +81,33 @@ public class Pathfinding_Behaviour : MonoBehaviour
         }    
 
     }
-   
+
+    void Retrace_Found_Path(Node Start, Node End)
+    {
+        //print("Retrace started"); 
+        List<Node> Path = new List<Node>();
+        Node Current_Node = End;
+        if (Current_Node == Start)
+        {
+            print("Retrace set to start");
+        }
+        while (Current_Node != Start)
+        {
+            if (!Path.Contains(Current_Node))
+            {
+                Path.Add(Current_Node);
+                //print("Node x:" + Current_Node.Grid_X + " Y: " + Current_Node.Grid_Y + "H: "+ Current_Node.H_Cost + " G: " + Current_Node.G_Cost + " F: " + Current_Node.F_Cost + " Added to Path");
+                Current_Node = Current_Node.Parent;
+            }
+
+
+        }
+        //Path.Add(Current_Node);
+        Path.Reverse();
+        //print("There are " + Path.Count + " Nodes in the path");
+        Path_Grid.Path = Path;
+    }
+
+
+
 }

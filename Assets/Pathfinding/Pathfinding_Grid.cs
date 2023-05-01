@@ -12,6 +12,11 @@ public class Pathfinding_Grid : MonoBehaviour
 
     float Node_Diameter;
     int Grid_Length_X, Grid_Length_Y;
+    public int Node_Num { 
+        get { 
+            return Grid_Length_X * Grid_Length_Y; 
+        } 
+    }
     public List<Node> Path;
     private void OnDrawGizmos()
     {
