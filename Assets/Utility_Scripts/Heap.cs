@@ -27,21 +27,24 @@ public class Heap<T> where T: Heap_Item_Interface<T>
     }
 
 
-    public void Sort_Up(T Item) //Sort an item upwards into the heap by comparing parent values
+    void Sort_Up(T item)
     {
-        int Parent_Ind = (Item.Heap_Index - 1)/2;
+        int parentIndex = (item.Heap_Index - 1) / 2;
+
         while (true)
         {
-            T Parent = Items[Parent_Ind];
-            if (Item.CompareTo(Parent) > 0) //Higher priority = 1, Same = 0, Lower = -1
+            T parentItem = Items[parentIndex];
+            if (item.CompareTo(parentItem) > 0)
             {
-                Swap(Item, Parent);
+                Swap(item, parentItem);
             }
             else
             {
+                //Debug.Log("Break Sort up");
                 break;
             }
-            Parent_Ind = (Item.Heap_Index - 1) / 2;
+
+            parentIndex = (item.Heap_Index - 1) / 2;
         }
     }
 
@@ -80,13 +83,13 @@ public class Heap<T> where T: Heap_Item_Interface<T>
         }
     }
 
-    void Swap(T A, T B)
+    void Swap(T itemA, T itemB)
     {
-        Items[A.Heap_Index] = Items[B.Heap_Index];
-        Items[B.Heap_Index] = Items[A.Heap_Index];
-        int ItemA_Ind = A.Heap_Index;
-        A.Heap_Index = B.Heap_Index;
-        B.Heap_Index = ItemA_Ind;
+        Items[itemA.Heap_Index] = itemB;
+        Items[itemB.Heap_Index] = itemA;
+        int itemAIndex = itemA.Heap_Index;
+        itemA.Heap_Index = itemB.Heap_Index;
+        itemB.Heap_Index = itemAIndex;
     }
 
     public T Remove_First_Item()
