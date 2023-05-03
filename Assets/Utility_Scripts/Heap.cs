@@ -12,7 +12,7 @@ public class Heap<T> where T: Heap_Item_Interface<T>
         Items = new T[Max_Size];
     }
 
-    void UpdateItem(T Item)
+    public void UpdateItem(T Item)
     {
         Sort_Up(Item);
         //Sort_Down(Item);
@@ -34,7 +34,7 @@ public class Heap<T> where T: Heap_Item_Interface<T>
         while (true)
         {
             T parentItem = Items[parentIndex];
-            if (item.CompareTo(parentItem) > 0)
+            if (item.CompareTo(parentItem) > 0) //Higher priority = 1, Same = 0, Lower = -1
             {
                 Swap(item, parentItem);
             }

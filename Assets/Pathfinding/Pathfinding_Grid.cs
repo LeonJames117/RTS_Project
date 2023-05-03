@@ -8,7 +8,7 @@ public class Pathfinding_Grid : MonoBehaviour
     public Vector2 Grid_Size;
     public float Node_Rad;
     Node[,] Grid_Array;
-    public bool Show_Debug = false;
+    public bool Show_Grid_Debug = false;
 
     float Node_Diameter;
     int Grid_Length_X, Grid_Length_Y;
@@ -17,33 +17,21 @@ public class Pathfinding_Grid : MonoBehaviour
             return Grid_Length_X * Grid_Length_Y; 
         } 
     }
-    public List<Node> Path;
-    private void OnDrawGizmos()
+    public void OnDrawGizmos()
     {
         //Debug Display
         Gizmos.DrawWireCube(transform.position, new Vector3(Grid_Size.x, 1, Grid_Size.y));
-        if (Show_Debug)
+        if (Show_Grid_Debug)
         {
             if (Grid_Array != null)
             {
                 foreach (Node node in Grid_Array)
                 {
                     Gizmos.color = (node.Walkable ? Color.green : Color.red);
-                   
-                        if (Path.Count > 0)
-                        {
-                            if (Path.Contains(node))
-                            {
-                                Gizmos.color = Color.black;
-                            }
-                        }
-
                     Gizmos.DrawCube(node.Pos, Vector3.one * (Node_Diameter - .1f));
                 }
             }
         }
-
-       
     }
     void Populate_Grid()
     { //Add nodes to grid
@@ -100,31 +88,6 @@ public class Pathfinding_Grid : MonoBehaviour
             }
         }
 
-        //if (Target.Grid_X > 0) // Nodes to the left
-        //{
-        //    N_List.Add(Grid_Array[Target.Grid_X - 1, Target.Grid_Y]);
-        //    N_List.Add(Grid_Array[Target.Grid_X - 1, Target.Grid_Y + 1]);
-        //    N_List.Add(Grid_Array[Target.Grid_X - 1, Target.Grid_Y - 1]);
-        //}
-        //if (Target.Grid_X < Grid_Length_X - 1) // Nodes to the right
-        //{
-        //    N_List.Add(Grid_Array[Target.Grid_X + 1, Target.Grid_Y]);
-        //    N_List.Add(Grid_Array[Target.Grid_X + 1, Target.Grid_Y + 1]);
-        //    N_List.Add(Grid_Array[Target.Grid_X + 1, Target.Grid_Y - 1]);
-        //}
-        //if (Target.Grid_Y > 0) // Nodes below
-        //{
-        //    N_List.Add(Grid_Array[Target.Grid_X, Target.Grid_Y - 1]);
-        //    N_List.Add(Grid_Array[Target.Grid_X - 1, Target.Grid_Y - 1]);
-        //    N_List.Add(Grid_Array[Target.Grid_X + 1, Target.Grid_Y - 1]);
-        //}
-        //if (Target.Grid_Y < Grid_Length_Y - 1) // Nodes above
-        //{
-        //    N_List.Add(Grid_Array[Target.Grid_X, Target.Grid_Y + 1]);
-        //    N_List.Add(Grid_Array[Target.Grid_X - 1, Target.Grid_Y + 1]);
-        //    N_List.Add(Grid_Array[Target.Grid_X + 1, Target.Grid_Y + 1]);
-        //}
-
         return N_List;
     }
 
@@ -135,15 +98,15 @@ public class Pathfinding_Grid : MonoBehaviour
 
         if(X_Distance > Y_Distance)
         {
-            return 14 * Y_Distance - 10 * X_Distance - Y_Distance;
+            return 14 * Y_Distance + 10 * (X_Distance - Y_Distance);
         }
         else
         {
-            return 14 * X_Distance - 10 * Y_Distance - X_Distance;
+            return 14 * X_Distance + 10 * (Y_Distance - X_Distance);
         }
     }
 
-    private void Start()    
+    private void Awake()    
     {
         Node_Diameter = Node_Rad * 2;
         Grid_Length_X = Mathf.RoundToInt (Grid_Size.x/Node_Diameter);
