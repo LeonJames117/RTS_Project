@@ -62,7 +62,7 @@ public class Pathfinding_Manager : MonoBehaviour
                         continue;
                     }
 
-                    int New_Move_Cost = CurrentN.G_Cost + Path_Grid.Distance_Between_Nodes(CurrentN, Neighbour);
+                    int New_Move_Cost = CurrentN.G_Cost + Path_Grid.Distance_Between_Nodes(CurrentN, Neighbour) + Neighbour.Threat;
                     if (New_Move_Cost < Neighbour.G_Cost || !Open_Nodes.Contains(Neighbour))
                     {
                         //print("Possible Candidate found");

@@ -10,11 +10,13 @@ public class Unit_Manager : MonoBehaviour
     Path_Request Current_Request;
     static Unit_Manager instance;
     Pathfinding_Manager Pathfinding;
+    public List<Unit> All_Units = new List<Unit>();
     bool Currently_Processing_Path;
     private void Awake()
     {
         instance = this;
         Pathfinding=GetComponent<Pathfinding_Manager>();
+        
     }
     
     public static void RequestPath(Vector3 Start, Vector3 Target, Action<Vector3[], bool> Callback)

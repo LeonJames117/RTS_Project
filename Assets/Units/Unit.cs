@@ -15,13 +15,25 @@ public class Unit : MonoBehaviour
         Unit_Manager.RequestPath(transform.position, Target.position, On_Path_Found);
     }
 
+    private void Update()
+    {
+        //Unit_Manager.RequestPath(transform.position, Target.position, On_Path_Found);
+    }
+    public void Update_Path()
+    {
+        Unit_Manager.RequestPath(transform.position, Target.position, On_Path_Found);
+    }
     public void On_Path_Found(Vector3[]New_Path,bool Path_Found)
     {
         if(Path_Found)
         {
-            Current_Path = New_Path;
-            StopCoroutine("Follow_Path");
-            StartCoroutine("Follow_Path");
+            if (New_Path != Current_Path)
+            {
+                Current_Path = New_Path;
+                StopCoroutine("Follow_Path");
+                StartCoroutine("Follow_Path");
+            }
+            
         }
     }
     public void OnDrawGizmos()

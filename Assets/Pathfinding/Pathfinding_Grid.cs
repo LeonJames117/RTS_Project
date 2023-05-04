@@ -63,6 +63,11 @@ public class Pathfinding_Grid : MonoBehaviour
         return Grid_Array[Grid_X,Grid_Y];
     }
 
+    public Node Find_Node_By_Grid(int Grid_X,int Grid_Y)
+    {
+        return Grid_Array[Grid_X, Grid_Y];
+    }
+
     public List<Node> Find_Node_Neighbours(Node Target)
     {
         //print("Target Node: X-" + Target.Grid_X + " Y-" + Target.Grid_Y);

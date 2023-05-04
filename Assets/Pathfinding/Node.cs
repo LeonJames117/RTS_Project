@@ -11,6 +11,7 @@ public class Node : Heap_Item_Interface<Node>
 
     public int G_Cost;
     public int H_Cost;
+    public int Threat;
     public Node Parent;
 
     public int F_Cost { get { return G_Cost + H_Cost; } }
