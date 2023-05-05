@@ -12,12 +12,12 @@ public class Projectile : MonoBehaviour
     public Unit_Manager Unit_Manager;
     Ray ray;
     RaycastHit hit;
-    List<Node> Nodes_In_Fire = new List<Node>();
+    List<Node> Nodes_In_Fire;
     // Start is called before the first frame update
     void Start()
     {
 
-        
+        Nodes_In_Fire = new List<Node>();
 
 
     }
