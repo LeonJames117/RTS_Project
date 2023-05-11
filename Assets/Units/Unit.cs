@@ -6,7 +6,7 @@ public class Unit : MonoBehaviour
 {
     // Start is called before the first frame update
     public Transform Target;
-    float Speed = 10;
+    public float Speed = 10;
     Vector3[] Current_Path;
     int Current_Waypoint_Index;
     float Rotation_Speed = 1;
