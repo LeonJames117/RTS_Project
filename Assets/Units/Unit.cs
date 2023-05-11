@@ -5,23 +5,40 @@ using UnityEngine;
 public class Unit : MonoBehaviour
 {
     // Start is called before the first frame update
-    public Transform Target;
+    public Vector3 Target;
     public float Speed = 10;
-    Vector3[] Current_Path;
-    int Current_Waypoint_Index;
-    float Rotation_Speed = 1;
+    public Vector3[] Current_Path;
+    public int Current_Waypoint_Index;
+    float Rotation_Speed = 3;
+    public Unit_Manager U_Man;
+    public GameObject Selection_Graphic;
+    public bool Following_Path;
+    public bool Is_Structre = false;
+
+
+   
+
+
+    public List<Vector3> Order_Queue = new List<Vector3>();
     void Start()
     {
-        Unit_Manager.RequestPath(transform.position, Target.position, On_Path_Found);
+        U_Man.All_Units.Add(this);
+        if(GetComponent<Structure_Base>() != null)
+        {
+            Is_Structre = true;
+        }
+        Selection_Graphic.SetActive(false);
+
     }
 
     private void Update()
     {
-        //Unit_Manager.RequestPath(transform.position, Target.position, On_Path_Found);
+        
     }
     public void Update_Path()
     {
-        Unit_Manager.RequestPath(transform.position, Target.position, On_Path_Found);
+        Unit_Manager.RequestPath(transform.position, Target, On_Path_Found);
+        print("Pathfinding Started");
     }
     public void On_Path_Found(Vector3[]New_Path,bool Path_Found)
     {
@@ -38,7 +55,7 @@ public class Unit : MonoBehaviour
     }
     public void OnDrawGizmos()
     {
-        if (Current_Path != null)
+        if (Current_Path != null && Following_Path)
         {
             for (int i = Current_Waypoint_Index; i < Current_Path.Length; i++)
             {
@@ -60,6 +77,9 @@ public class Unit : MonoBehaviour
 
     IEnumerator Follow_Path()
     {
+        
+
+        Following_Path = true;
         Vector3 Current_Waypoint = Current_Path[0];
         while (true)
         {
@@ -68,11 +88,14 @@ public class Unit : MonoBehaviour
                 Current_Waypoint_Index++;
                 if (Current_Waypoint_Index >= Current_Path.Length)
                 {
+                    print("Finshed Path");
                     Current_Waypoint_Index = 0;
+                    Stop_Following_Path();
                     yield break;
                 }
                 Current_Waypoint = Current_Path[Current_Waypoint_Index];
             }
+            
 
             Vector3 targetDir = Current_Waypoint - this.transform.position;
             float step = Rotation_Speed * Time.deltaTime;
@@ -84,6 +107,21 @@ public class Unit : MonoBehaviour
             yield return null;
         }
     }
+
+    void Stop_Following_Path()
+    {
+
+        
+        StopCoroutine("Follow_Path");
+        Following_Path = false;
+        if(Order_Queue.Count > 0)
+        {
+            Target = Order_Queue[0];
+            Order_Queue.RemoveAt(0);
+            Update_Path();
+        }
+    }
+
 }
 
 

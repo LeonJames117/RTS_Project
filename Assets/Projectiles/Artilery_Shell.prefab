@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Grid: {fileID: 0}
+  Blast_Radius: 3
   Unit_Manager: {fileID: 0}
   rigidbody: {fileID: 0}
   Warning_Distance: 500

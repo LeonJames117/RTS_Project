@@ -7,14 +7,14 @@ public class Projectile : MonoBehaviour
 {
 
     public Pathfinding_Grid Grid;
-    int Blast_Radius = 5;
+    public int Blast_Radius = 5;
     bool Incoming_Resolved=false;
     public Unit_Manager Unit_Manager;
     Ray ray;
     RaycastHit hit;
     public Rigidbody rigidbody;
     float Previous_Y = -1;
-    Transform Target;
+    Vector3 Target;
     List<Node> Nodes_In_Fire;
     public int Warning_Distance = 20;
     // Start is called before the first frame update
@@ -26,7 +26,7 @@ public class Projectile : MonoBehaviour
 
     }
 
-    public void Set_Target(Transform target)
+    public void Set_Target(Vector3 target)
     {
         Target = target;
     }
@@ -70,7 +70,11 @@ public class Projectile : MonoBehaviour
         }
         foreach(Unit unit in Unit_Manager.All_Units)
         {
-            unit.Update_Path();
+            if (!unit.Is_Structre && unit.Following_Path)
+            {
+                unit.Update_Path();
+            }
+            
         }
     }
 
@@ -78,11 +82,11 @@ public class Projectile : MonoBehaviour
     void Update()
     {
         //Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Warning_Distance)
-        if (!Incoming_Resolved && Vector3.Distance(transform.position,Target.position) < Warning_Distance && Previous_Y > transform.position.y)
+        if (!Incoming_Resolved && Vector3.Distance(transform.position,Target) < Warning_Distance && Previous_Y > transform.position.y)
         {
             //Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) * hit.distance, Color.red);
             //print("Raycast Hit");
-            On_Incoming(Target.position);
+            On_Incoming(Target);
             Incoming_Resolved = true;
         }
         else

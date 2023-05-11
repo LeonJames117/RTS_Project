@@ -18,6 +18,10 @@ public class Pathfinding_Manager : MonoBehaviour
         StartCoroutine(Find_New_Path(Start, Target));
     }
 
+    private void Update()
+    {
+        
+    }
     IEnumerator Find_New_Path(Vector3 Start, Vector3 Target)
     {
         Stopwatch SW = new Stopwatch();
@@ -27,7 +31,7 @@ public class Pathfinding_Manager : MonoBehaviour
         Node StartN = Path_Grid.Find_Node_By_Pos(Start);
         Node TargetN = Path_Grid.Find_Node_By_Pos(Target);
 
-        if(StartN.Walkable && TargetN.Walkable)// Only attempts to find path if it is possbile to reach the end
+        if(TargetN.Walkable)// Only attempts to find path if it is possbile to reach the end
         {
             Heap<Node> Open_Nodes = new Heap<Node>(Path_Grid.Node_Num);
             HashSet<Node> Closed_Nodes = new HashSet<Node>();
@@ -138,6 +142,13 @@ public class Pathfinding_Manager : MonoBehaviour
         return Waypoints.ToArray();
     }
 
-
+    public bool Check_Path(Vector3 Target)
+    {
+        if(!Path_Grid.Find_Node_By_Pos(Target).Walkable)
+        {
+            return false;
+        }
+        return true;
+    }
 
 }

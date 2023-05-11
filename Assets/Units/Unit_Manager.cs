@@ -11,6 +11,8 @@ public class Unit_Manager : MonoBehaviour
     static Unit_Manager instance;
     Pathfinding_Manager Pathfinding;
     public List<Unit> All_Units = new List<Unit>();
+    public List<Unit> Selected_Units = new List<Unit>();
+    List<Vector3> Order_Queue = new List<Vector3>();
     bool Currently_Processing_Path;
     private void Awake()
     {
@@ -42,6 +44,8 @@ public class Unit_Manager : MonoBehaviour
         Currently_Processing_Path=false;
         Process_Next();
     }
+
+    
 
     struct Path_Request
     {
