@@ -54,7 +54,6 @@ public class Pathfinding_Grid : MonoBehaviour
         float Y_Percent = (Pos.z + Grid_Length_Y / 2) / Grid_Length_Y;
         X_Percent = Mathf.Clamp01(X_Percent);
         Y_Percent = Mathf.Clamp01(Y_Percent);
-
         int Grid_X = Mathf.RoundToInt((Grid_Length_X - 1) * X_Percent);
         int Grid_Y = Mathf.RoundToInt((Grid_Length_Y - 1) * Y_Percent);
         Mathf.RoundToInt(Grid_X);
@@ -64,13 +63,12 @@ public class Pathfinding_Grid : MonoBehaviour
     }
 
     public Node Find_Node_By_Grid(int Grid_X,int Grid_Y)
-    {
+    {// Find a node given it's X and Y positon on the grid
         return Grid_Array[Grid_X, Grid_Y];
     }
 
     public List<Node> Find_Node_Neighbours(Node Target)
     {
-        //print("Target Node: X-" + Target.Grid_X + " Y-" + Target.Grid_Y);
         List<Node> N_List = new List<Node>();
         for (int x = -1; x <= 1; x++)
         {
@@ -80,11 +78,9 @@ public class Pathfinding_Grid : MonoBehaviour
                 {
                     continue;
                 }
-
                 int Current_X = Target.Grid_X + x;
                 int Current_Y = Target.Grid_Y + y;
-
-                //Is node neighbour
+                // If node is a neighbour
                 if (Current_X >= 0 && Current_X < Grid_Size.x && Current_Y >= 0 && Current_Y < Grid_Size.y)
                 {
                     //print("Node: X-" + Current_X + " Y-" + Current_Y + " Is Neighbour");
@@ -92,10 +88,8 @@ public class Pathfinding_Grid : MonoBehaviour
                 }
             }
         }
-
         return N_List;
     }
-
     public int Distance_Between_Nodes(Node N_1,Node N_2)
     {
         int X_Distance = Mathf.Abs(N_1.Grid_X - N_2.Grid_X);
@@ -110,18 +104,13 @@ public class Pathfinding_Grid : MonoBehaviour
             return 14 * X_Distance + 10 * (Y_Distance - X_Distance);
         }
     }
-
     private void Awake()    
     {
         Node_Diameter = Node_Rad * 2;
         Grid_Length_X = Mathf.RoundToInt (Grid_Size.x/Node_Diameter);
         Grid_Length_Y = Mathf.RoundToInt (Grid_Size.y/Node_Diameter);
-
         Populate_Grid();
-        
     }
-
-
     private void Update()
     {
         foreach (Node n in Grid_Array)

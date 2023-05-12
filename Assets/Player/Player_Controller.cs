@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player_Controller : MonoBehaviour
 {
+    // Camera
     [Header("Camera")]
     public Camera Camera_Ref;
     public GameObject Floor;
@@ -12,18 +13,13 @@ public class Player_Controller : MonoBehaviour
     [Range(0f, 1f)]
     public float Pan_Sensitivity = 0.2f;
 
+    // Unit Selection
     [Header("Unit Management")]
     public Unit_Manager U_Manager;
-    //Unit Selection
     Vector3 Mouse_Start_Pos;
     public LayerMask Selectable;
     public LayerMask Ground;
-    void Awake()
-    {
-        //Camera_Ref= Camera.main;
-    }
-
-    // Update is called once per frame
+    
     void Update()
     {
         // Camera Controls
@@ -79,7 +75,17 @@ public class Player_Controller : MonoBehaviour
             {
                 if (Input.GetKey(KeyCode.LeftShift))
                 {// Shift Left Clicking
-                    Shift_Select(Hit.collider.gameObject.GetComponent<Unit>());
+                    Unit Selected_Unit = Hit.collider.gameObject.GetComponent<Unit>();
+                    if (!U_Manager.Selected_Units.Contains(Selected_Unit))
+                    {
+                        
+                        Shift_Select(Selected_Unit);
+                    }
+                    else
+                    {
+                        Deselect_Sngle(Selected_Unit);
+                    }
+                    
                 }
                 else
                 {// Single Left Clicking
@@ -92,6 +98,7 @@ public class Player_Controller : MonoBehaviour
                 {//Single Left Click on ground
                     Clear_Selection();
                 }
+                
             }
         }
         if (Input.GetMouseButtonUp(0))// Left Mouse Released
@@ -102,33 +109,33 @@ public class Player_Controller : MonoBehaviour
         if (Input.GetMouseButtonDown(1) && U_Manager.Selected_Units.Count !=0)
         {
             Ray ray = Camera_Ref.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit Hit, Mathf.Infinity, Ground))
-            {
+            if (Physics.Raycast(ray, out RaycastHit Hit, Mathf.Infinity, Ground) && U_Manager.Selected_Units.Count > 0)
+            {// If player right clicks on the ground and has units selected
                 foreach (Unit unit in U_Manager.Selected_Units)
                 {
                     if (!unit.Is_Structre)
                     {
                         if(Input.GetKey(KeyCode.LeftShift))
-                        {
+                        {// Shift right click
                             if (!unit.Following_Path)
-                            {
+                            {// If the unit is not currently following a path treat as normal click without clearing the order queue
                                 unit.Target = Hit.point;
                                 unit.Update_Path();
                             }
                             else
-                            {
+                            {// If unit is following a path add the new target to it's order queue
                                 unit.Order_Queue.Add(Hit.point);
                             }  
                         }
                         else
-                        {
+                        {// Basic right click
                             unit.Order_Queue.Clear();
                             unit.Target = Hit.point;
                             unit.Update_Path();
                         } 
                     }
                     else
-                    {
+                    {// If a structure set target still for gun structres and factory produced units
                         unit.Target = Hit.point;
                     } 
                 }
@@ -138,7 +145,7 @@ public class Player_Controller : MonoBehaviour
 
     //Selection
    void Single_Select(Unit Unit_to_Add)
-    {
+    {// Selcting one unit without wanting to have any others selected
         Clear_Selection();
         print("Single Select");
         U_Manager.Selected_Units.Add(Unit_to_Add); 
@@ -146,7 +153,7 @@ public class Player_Controller : MonoBehaviour
     }
 
     void Shift_Select(Unit Unit_to_Add)
-    {
+    {// Selecting one unit with the intention to select more
         if (!U_Manager.Selected_Units.Contains(Unit_to_Add))
         {
             U_Manager.Selected_Units.Add(Unit_to_Add);
@@ -160,12 +167,12 @@ public class Player_Controller : MonoBehaviour
     }
     
     void Drag_Select(Unit Unit_to_Add)
-    {
+    {// Select all units within an area (Not yet implimented)
 
     }
 
     void Clear_Selection()
-    {
+    {// Clear the current selction
         foreach(Unit unit in U_Manager.Selected_Units)
         {
             unit.Selection_Graphic.SetActive(false);
@@ -174,8 +181,9 @@ public class Player_Controller : MonoBehaviour
     }
 
     void Deselect_Sngle(Unit Unit_to_Remove)
-    {
-
+    {// Remove a specifed unit from current selection
+        Unit_to_Remove.Selection_Graphic.SetActive(false);
+        U_Manager.Selected_Units.Remove(Unit_to_Remove);  
     }
     
 }
