@@ -485,7 +485,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Area_of_effect: {fileID: 405933260}
-  Wind_Speed: 5
+  Wind_Speed: 2
 --- !u!65 &405933260
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -497,7 +497,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 100, y: 10, z: 50}
+  m_Size: {x: 100, y: 10, z: 20}
   m_Center: {x: 50, y: 0, z: 0}
 --- !u!4 &405933261
 Transform:
@@ -507,7 +507,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 405933258}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -59.86, y: 15, z: 0}
+  m_LocalPosition: {x: -59.86, y: 15, z: 11.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -552,7 +552,7 @@ MonoBehaviour:
     m_Bits: 64
   Grid_Size: {x: 100, y: 100}
   Node_Rad: 0.5
-  Show_Grid_Debug: 0
+  Show_Grid_Debug: 1
 --- !u!64 &477862294
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -717,6 +717,13 @@ MonoBehaviour:
   Blast_Radius: 5
   Unit_Manager: {fileID: 1546152350}
   rigidbody: {fileID: 0}
+  Starting_Velocity: {x: 0, y: 0, z: 0}
+  Projection_Points: 0
+  Time_Between_Points: 0.1
+  Projection_Line: {fileID: 0}
+  Projectile_Colison_Mask:
+    serializedVersion: 2
+    m_Bits: 0
   Warning_Distance: 20
 --- !u!135 &812855147
 SphereCollider:

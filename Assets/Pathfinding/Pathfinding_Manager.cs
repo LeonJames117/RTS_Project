@@ -43,10 +43,6 @@ public class Pathfinding_Manager : MonoBehaviour
                 Node CurrentN = Open_Nodes.Remove_First_Item();
                 Closed_Nodes.Add(CurrentN);
 
-
-                //print("there are " + Open_Nodes.Count + " Open Nodes");
-                //print("There are " + Closed_Nodes.Count + " Closed Nodes");
-
                 if (CurrentN == TargetN)
                 {
                     Path_Found = true;
@@ -59,10 +55,8 @@ public class Pathfinding_Manager : MonoBehaviour
 
                 foreach (Node Neighbour in N_List)
                 {
-                    //print("Scanning Neighbours...");
                     if (!Neighbour.Walkable || Closed_Nodes.Contains(Neighbour))
-                    {
-                        // print("Neighbour not walkable");
+                    {// Ignore non walkable or already closed nodes
                         continue;
                     }
 
@@ -76,7 +70,6 @@ public class Pathfinding_Manager : MonoBehaviour
 
                         if (!Open_Nodes.Contains(Neighbour))
                         {
-                            //print("Node added to open list");
                             Open_Nodes.Add(Neighbour);
 
                         }
@@ -100,7 +93,6 @@ public class Pathfinding_Manager : MonoBehaviour
 
     Vector3[] Retrace_Found_Path(Node Start, Node End)
     {
-        //print("Retrace started"); 
         List<Node> Path = new List<Node>();
         Node Current_Node = End;
         if (Current_Node == Start)
@@ -112,18 +104,15 @@ public class Pathfinding_Manager : MonoBehaviour
             if (!Path.Contains(Current_Node))
             {
                 Path.Add(Current_Node);
-                //print("Node x:" + Current_Node.Grid_X + " Y: " + Current_Node.Grid_Y + "H: "+ Current_Node.H_Cost + " G: " + Current_Node.G_Cost + " F: " + Current_Node.F_Cost + " Added to Path");
+                
                 Current_Node = Current_Node.Parent;
             }
 
 
         }
-        //Path.Add(Current_Node);
         Vector3[] Path_Waypoints = Find_Waypoints_in_Path(Path);
         Array.Reverse(Path_Waypoints);
         return Path_Waypoints;
-        //print("There are " + Path.Count + " Nodes in the path");
-       
     }
 
     Vector3[] Find_Waypoints_in_Path(List<Node> Path)

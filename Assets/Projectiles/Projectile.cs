@@ -53,10 +53,9 @@ public class Projectile : MonoBehaviour
     {
         Node Impact_Node = Grid.Find_Node_By_Pos(Impact_Site);
         
-        print("Impact Node X " + Impact_Node.Grid_X + " Impact Node Y "+ Impact_Node.Grid_Y);
         int i = 0;
         for (int x = -Blast_Radius; x < Blast_Radius; x++)
-        {
+        {// Find all Nodes within blast radius in both directions of the impact site
             for (int y = -Blast_Radius; y < Blast_Radius; y++)
             {
                 int NodeX = Impact_Node.Grid_X + x;
@@ -76,13 +75,13 @@ public class Projectile : MonoBehaviour
         }
 
         foreach(Node Node in Nodes_In_Fire)
-        {
+        {// Increase Node's threat Values
             Node.Threat += 20;
         }
         foreach(Unit unit in Unit_Manager.All_Units)
         {
             if (!unit.Is_Structre && unit.Following_Path)
-            {
+            {// if the unit is not a structure and is currently following a path, make it update it's path
                 unit.Update_Path();
             }
             
@@ -92,16 +91,11 @@ public class Projectile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Vector3.Distance(transform.position,Target) < Warning_Distance
-        // Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Warning_Distance)
-
         
         transform.LookAt(rigidbody.velocity);
         Draw_Projection();
         if (!Incoming_Resolved && Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Warning_Distance))
         {
-            //Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) * hit.distance, Color.red);
-            //print("Raycast Hit");
             On_Incoming(Current_Impact_Point);
             Incoming_Resolved = true;
         }
@@ -146,7 +140,7 @@ public class Projectile : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         if (!collision.gameObject.GetComponent<Wind>())
-        {
+        {// Removes threat from any affected nodes after the projectile has landed and then destroys it
             if (Incoming_Resolved)
             {
                 foreach (Node N in Nodes_In_Fire)
