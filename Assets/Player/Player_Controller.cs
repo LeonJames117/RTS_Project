@@ -12,14 +12,24 @@ public class Player_Controller : MonoBehaviour
     public float Zoom_Sensitivity = 0.5f;
     [Range(0f, 1f)]
     public float Pan_Sensitivity = 0.2f;
-
+    public float Max_Zoom_Height = 30;
+    public float Min_Zoom_Height = 10;
     // Unit Selection
     [Header("Unit Management")]
     public Unit_Manager U_Manager;
     Vector3 Mouse_Start_Pos;
     public LayerMask Selectable;
     public LayerMask Ground;
-    
+    // Base Building
+    [Header("Base Building")]
+    bool Building_Mode = false;
+    Structure_Base Selected_Building;
+    public Pathfinding_Grid Grid;
+    Material Start_Mat;
+    public Material Can_Build;
+    public Material Cannot_Build;
+    public LayerMask Blocks_Build;
+
     void Update()
     {
         // Camera Controls
@@ -51,18 +61,19 @@ public class Player_Controller : MonoBehaviour
         if (Input.mouseScrollDelta.y > 0)
         {// Zoom in
             float New_Y = Camera_Ref.transform.position.y - Zoom_Sensitivity;
-            Camera_Ref.transform.position = new Vector3(Camera_Ref.transform.position.x, New_Y, Camera_Ref.transform.position.z);
-            if (New_Y < Floor.transform.position.y + 5)
+            
+            if (New_Y < Floor.transform.position.y + Min_Zoom_Height)
             {
-                New_Y = Floor.transform.position.y + 5;
+                New_Y = Floor.transform.position.y + Min_Zoom_Height;
             }
+            Camera_Ref.transform.position = new Vector3(Camera_Ref.transform.position.x, New_Y, Camera_Ref.transform.position.z);
         }
         if (Input.mouseScrollDelta.y < 0)
         {// Zoom out
             float New_Y = Camera_Ref.transform.position.y + Zoom_Sensitivity;
-            if (New_Y < Floor.transform.position.y + 5)
+            if (New_Y > Floor.transform.position.y + Max_Zoom_Height)
             {
-                New_Y = Floor.transform.position.y + 5;
+                New_Y = Floor.transform.position.y + Max_Zoom_Height;
             }
             Camera_Ref.transform.position = new Vector3(Camera_Ref.transform.position.x, New_Y, Camera_Ref.transform.position.z);
         }
@@ -141,6 +152,32 @@ public class Player_Controller : MonoBehaviour
                 }
             }
         }
+        if (Building_Mode)
+        {
+            Ray ray = Camera_Ref.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit Hit, Mathf.Infinity, Ground))
+            {
+                
+                Selected_Building.transform.position = Grid.Find_Node_By_Pos(Hit.point).Pos;
+                print("Ground hit: " + Hit.point);
+            }
+            else
+            {
+                print("No Ground hit");
+            }
+            Collider[] colliders = Physics.OverlapBox(Selected_Building.transform.position, Selected_Building.transform.localScale / 2, Quaternion.identity, Blocks_Build);
+            if(colliders.Length > 0)
+            {
+                Selected_Building.GetComponent<Renderer>().material = Cannot_Build;
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                Selected_Building.GetComponent<Renderer>().material = Start_Mat;
+                Building_Mode = false;
+                print("Build Mode False");
+            }
+        }
     }
 
     //Selection
@@ -186,4 +223,16 @@ public class Player_Controller : MonoBehaviour
         U_Manager.Selected_Units.Remove(Unit_to_Remove);  
     }
     
+    public void Enter_Build_Mode(Structure_Base Structure_To_Build)
+    {
+        Structure_Base New_Building = Instantiate(Structure_To_Build);
+        Selected_Building = New_Building;
+        Start_Mat = New_Building.GetComponent<MeshRenderer>().material;
+        New_Building.GetComponent<Renderer>().material = Can_Build;
+        Building_Mode = true;
+        
+            
+        
+        
+    }
 }
