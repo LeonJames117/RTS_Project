@@ -28,7 +28,8 @@ public class Player_Controller : MonoBehaviour
     Material Start_Mat;
     public Material Can_Build;
     public Material Cannot_Build;
-    public LayerMask Blocks_Build;
+    public LayerMask Ignore_Build_Block;
+    bool Build_Blocked = false;
 
     void Update()
     {
@@ -159,19 +160,42 @@ public class Player_Controller : MonoBehaviour
             {
                 
                 Selected_Building.transform.position = Grid.Find_Node_By_Pos(Hit.point).Pos;
-                print("Ground hit: " + Hit.point);
+                //print("Ground hit: " + Hit.point);
             }
             else
             {
-                print("No Ground hit");
+                //print("No Ground hit");
             }
-            Collider[] colliders = Physics.OverlapBox(Selected_Building.transform.position, Selected_Building.transform.localScale / 2, Quaternion.identity, Blocks_Build);
+            Collider[] colliders = Physics.OverlapBox(Selected_Building.transform.position, Selected_Building.transform.localScale/2, Quaternion.identity, Ignore_Build_Block);
             if(colliders.Length > 0)
             {
-                Selected_Building.GetComponent<Renderer>().material = Cannot_Build;
+                
+                print("Colliders " + colliders.Length);
+                foreach (Collider Blocker in colliders)
+                {
+                    print("Collided with " + Blocker.name);
+                    if (Blocker.name != Selected_Building.name)
+                    {
+                        Selected_Building.GetComponent<Renderer>().material = Cannot_Build;
+                        print("Build blocked by " + colliders[0].name);
+                        Build_Blocked = true;
+                        break;
+                    }
+                    else
+                    {
+                        print("Build not blocked by " + Blocker.name);
+                        Selected_Building.GetComponent<Renderer>().material = Can_Build;
+                        Build_Blocked = false;
+                    }
+                }
+                    
+            }
+            else
+            {
+                Selected_Building.GetComponent<Renderer>().material = Can_Build;
             }
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && !Build_Blocked)
             {
                 Selected_Building.GetComponent<Renderer>().material = Start_Mat;
                 Building_Mode = false;
@@ -230,9 +254,5 @@ public class Player_Controller : MonoBehaviour
         Start_Mat = New_Building.GetComponent<MeshRenderer>().material;
         New_Building.GetComponent<Renderer>().material = Can_Build;
         Building_Mode = true;
-        
-            
-        
-        
     }
 }

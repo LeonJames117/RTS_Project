@@ -1410,7 +1410,7 @@ Transform:
   m_GameObject: {fileID: 897873571}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -31.9, y: 0.37, z: -0.57}
-  m_LocalScale: {x: 4.4527, y: 1, z: 1}
+  m_LocalScale: {x: 15.747865, y: 3.5367, z: 3.5367}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1636,7 +1636,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4b4144465b6ff5441ad97694276d8d69, type: 2}
+  - {fileID: 2100000, guid: 825b6b7180f51184a9028bfe538c2e8c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2137,7 +2137,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -254.59998, y: -178}
+  m_AnchoredPosition: {x: -254.60004, y: -178}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1704187710
@@ -2223,9 +2223,9 @@ MonoBehaviour:
   Grid: {fileID: 477862293}
   Can_Build: {fileID: 2100000, guid: 1430f937fe0baf942bcd6b8332ce8a32, type: 2}
   Cannot_Build: {fileID: 2100000, guid: 4b4144465b6ff5441ad97694276d8d69, type: 2}
-  Blocks_Build:
+  Ignore_Build_Block:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 64
 --- !u!4 &1741277311
 Transform:
   m_ObjectHideFlags: 0
