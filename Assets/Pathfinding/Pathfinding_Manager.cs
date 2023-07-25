@@ -5,12 +5,28 @@ using System.Diagnostics;
 using System;
 public class Pathfinding_Manager : MonoBehaviour
 {
+    public int Team;
     public Pathfinding_Grid Path_Grid;
     Unit_Manager Unit_Manager;
-    private void Awake()
+   public Pathfinding_Manager(int team)
     {
+        Team = team;
+    }
+    public bool Setup(Unit_Manager UM)
+    {
+        bool Success = true;
         //Path_Grid = GetComponent<Pathfinding_Grid>();
-        Unit_Manager = GetComponent<Unit_Manager>();
+        if(UM.Team == Team)
+        {
+            Unit_Manager = UM;
+        }
+        else
+        {
+            print("Failed to assign unit manager " + UM.Team + " to Path manager team " + Team);
+            Success = false;
+        }
+        Path_Grid=FindObjectOfType<Pathfinding_Grid>();
+        return Success;
     }
 
     public void Start_Pathfinding(Vector3 Start, Vector3 Target)

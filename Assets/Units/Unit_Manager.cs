@@ -5,7 +5,7 @@ using System;
 
 public class Unit_Manager : MonoBehaviour
 {
-    
+    public int Team;
     Queue<Path_Request> Request_Queue = new Queue<Path_Request>();
     Path_Request Current_Request;
     static Unit_Manager instance;
@@ -17,9 +17,27 @@ public class Unit_Manager : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        Pathfinding=GetComponent<Pathfinding_Manager>();
-        
+
     }
+    public Unit_Manager(int T)
+    {
+        Team = T;
+    }
+    public bool Set_Pathfinding_Manager(Pathfinding_Manager PM)
+    {
+        bool Success = true;
+        if(PM.Team == Team)
+        {
+            Pathfinding = PM;
+        }
+        else
+        {
+            print("Failed to assign path manager "+ PM.Team + " to unit manager team " + Team);
+            Success = false;
+        }
+        return Success;
+    }
+        
     
     public static void RequestPath(Vector3 Start, Vector3 Target, Action<Vector3[], bool> Callback)
     {

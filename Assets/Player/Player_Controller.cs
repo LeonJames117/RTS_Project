@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class Player_Controller : MonoBehaviour
 {
+// Game Management
+    [Header("Game Management")]
+    public int m_Team;
+    public Resource_Manager m_resource_manager;
+    public Unit_Manager m_unit_manager;
     // Camera
     [Header("Camera")]
     public Camera Camera_Ref;
@@ -14,23 +19,50 @@ public class Player_Controller : MonoBehaviour
     public float Pan_Sensitivity = 0.2f;
     public float Max_Zoom_Height = 30;
     public float Min_Zoom_Height = 10;
+    
     // Unit Selection
     [Header("Unit Management")]
-    public Unit_Manager U_Manager;
+    
     Vector3 Mouse_Start_Pos;
     public LayerMask Selectable;
     public LayerMask Ground;
     // Base Building
     [Header("Base Building")]
+    public Pathfinding_Grid Grid;
     bool Building_Mode = false;
     Structure_Base Selected_Building;
-    public Pathfinding_Grid Grid;
     Material Start_Mat;
-    public Material Can_Build;
-    public Material Cannot_Build;
-    public LayerMask Ignore_Build_Block;
+    public Material Can_Build_Material;
+    public Material Cannot_Build_Material;
+    public LayerMask Build_Blocking_Layer;
     bool Build_Blocked = false;
-
+    
+    public Player_Controller(int Team)
+    {
+        Team = m_Team;
+    }
+    public bool Setup(Unit_Manager UM,Resource_Manager RM)
+    {
+        bool success = true;
+        if(UM.Team == m_Team)
+        {
+           m_unit_manager = UM;
+        }
+        else
+        {
+            success = false;
+        }
+        if(RM.Team == m_Team)
+        {
+            m_resource_manager = RM;
+        }
+        else
+        {
+            success = false;
+        }
+        return success;
+    }
+    
     void Update()
     {
         // Camera Controls
@@ -88,7 +120,7 @@ public class Player_Controller : MonoBehaviour
                 if (Input.GetKey(KeyCode.LeftShift))
                 {// Shift Left Clicking
                     Unit Selected_Unit = Hit.collider.gameObject.GetComponent<Unit>();
-                    if (!U_Manager.Selected_Units.Contains(Selected_Unit))
+                    if (!m_unit_manager.Selected_Units.Contains(Selected_Unit))
                     {
                         
                         Shift_Select(Selected_Unit);
@@ -118,12 +150,12 @@ public class Player_Controller : MonoBehaviour
             //print("Box Dimentsions = " + Mouse_Start_Pos + Get_Mouse_World_Pos());
             
         }
-        if (Input.GetMouseButtonDown(1) && U_Manager.Selected_Units.Count !=0)
+        if (Input.GetMouseButtonDown(1) && m_unit_manager.Selected_Units.Count !=0)
         {
             Ray ray = Camera_Ref.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit Hit, Mathf.Infinity, Ground) && U_Manager.Selected_Units.Count > 0)
+            if (Physics.Raycast(ray, out RaycastHit Hit, Mathf.Infinity, Ground) && m_unit_manager.Selected_Units.Count > 0)
             {// If player right clicks on the ground and has units selected
-                foreach (Unit unit in U_Manager.Selected_Units)
+                foreach (Unit unit in m_unit_manager.Selected_Units)
                 {
                     if (!unit.Is_Structre)
                     {
@@ -166,17 +198,21 @@ public class Player_Controller : MonoBehaviour
             {
                 //print("No Ground hit");
             }
-            Collider[] colliders = Physics.OverlapBox(Selected_Building.transform.position, Selected_Building.transform.localScale/2, Quaternion.identity, Ignore_Build_Block);
-            if(colliders.Length > 0)
+            Collider[] colliders = Physics.OverlapBox(Selected_Building.transform.position, Selected_Building.transform.localScale/2, Quaternion.identity, Build_Blocking_Layer);
+            if(m_resource_manager.Stored_Metal < Selected_Building.Metal_Cost || m_resource_manager.Stored_Power < Selected_Building.Power_Cost)
+            {
+                Selected_Building.GetComponent<Renderer>().material = Cannot_Build_Material;
+            }
+            else if(colliders.Length > 0)
             {
                 
                 print("Colliders " + colliders.Length);
                 foreach (Collider Blocker in colliders)
                 {
                     print("Collided with " + Blocker.name);
-                    if (Blocker.name != Selected_Building.name)
+                    if (Blocker.gameObject != Selected_Building.gameObject)
                     {
-                        Selected_Building.GetComponent<Renderer>().material = Cannot_Build;
+                        Selected_Building.GetComponent<Renderer>().material = Cannot_Build_Material;
                         print("Build blocked by " + colliders[0].name);
                         Build_Blocked = true;
                         break;
@@ -184,7 +220,7 @@ public class Player_Controller : MonoBehaviour
                     else
                     {
                         print("Build not blocked by " + Blocker.name);
-                        Selected_Building.GetComponent<Renderer>().material = Can_Build;
+                        Selected_Building.GetComponent<Renderer>().material = Can_Build_Material;
                         Build_Blocked = false;
                     }
                 }
@@ -192,12 +228,26 @@ public class Player_Controller : MonoBehaviour
             }
             else
             {
-                Selected_Building.GetComponent<Renderer>().material = Can_Build;
+                Selected_Building.GetComponent<Renderer>().material = Can_Build_Material;
+            }
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                print("Start Rotation = " + Selected_Building.transform.rotation);
+                Selected_Building.transform.Rotate(0, 45, 0);
+                print("New Rotation = " + Selected_Building.transform.rotation);
+            }
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                print("Start Rotation = " + Selected_Building.transform.rotation);
+                Selected_Building.transform.Rotate(0, -45, 0);
+                print("New Rotation = " + Selected_Building.transform.rotation);
             }
 
-            if (Input.GetMouseButtonDown(0) && !Build_Blocked)
+            if (Input.GetMouseButtonDown(0) && !Build_Blocked && m_resource_manager.Stored_Metal>= Selected_Building.Metal_Cost && m_resource_manager.Stored_Power >= Selected_Building.Power_Cost)
             {
                 Selected_Building.GetComponent<Renderer>().material = Start_Mat;
+                m_resource_manager.Stored_Metal -= Selected_Building.Metal_Cost;
+                m_resource_manager.Stored_Power -= Selected_Building.Power_Cost;
                 Building_Mode = false;
                 print("Build Mode False");
             }
@@ -209,20 +259,20 @@ public class Player_Controller : MonoBehaviour
     {// Selcting one unit without wanting to have any others selected
         Clear_Selection();
         print("Single Select");
-        U_Manager.Selected_Units.Add(Unit_to_Add); 
+        m_unit_manager.Selected_Units.Add(Unit_to_Add); 
         Unit_to_Add.Selection_Graphic.SetActive(true);
     }
 
     void Shift_Select(Unit Unit_to_Add)
     {// Selecting one unit with the intention to select more
-        if (!U_Manager.Selected_Units.Contains(Unit_to_Add))
+        if (!m_unit_manager.Selected_Units.Contains(Unit_to_Add))
         {
-            U_Manager.Selected_Units.Add(Unit_to_Add);
+            m_unit_manager.Selected_Units.Add(Unit_to_Add);
             Unit_to_Add.Selection_Graphic.SetActive(true);
         }
         else
         {
-            U_Manager.Selected_Units.Remove(Unit_to_Add);
+            m_unit_manager.Selected_Units.Remove(Unit_to_Add);
             Unit_to_Add.Selection_Graphic.SetActive(false);
         }
     }
@@ -234,17 +284,17 @@ public class Player_Controller : MonoBehaviour
 
     void Clear_Selection()
     {// Clear the current selction
-        foreach(Unit unit in U_Manager.Selected_Units)
+        foreach(Unit unit in m_unit_manager.Selected_Units)
         {
             unit.Selection_Graphic.SetActive(false);
         }
-        U_Manager.Selected_Units.Clear();
+        m_unit_manager.Selected_Units.Clear();
     }
 
     void Deselect_Sngle(Unit Unit_to_Remove)
     {// Remove a specifed unit from current selection
         Unit_to_Remove.Selection_Graphic.SetActive(false);
-        U_Manager.Selected_Units.Remove(Unit_to_Remove);  
+        m_unit_manager.Selected_Units.Remove(Unit_to_Remove);  
     }
     
     public void Enter_Build_Mode(Structure_Base Structure_To_Build)
@@ -252,7 +302,7 @@ public class Player_Controller : MonoBehaviour
         Structure_Base New_Building = Instantiate(Structure_To_Build);
         Selected_Building = New_Building;
         Start_Mat = New_Building.GetComponent<MeshRenderer>().material;
-        New_Building.GetComponent<Renderer>().material = Can_Build;
+        New_Building.GetComponent<Renderer>().material = Can_Build_Material;
         Building_Mode = true;
     }
 }
