@@ -41,8 +41,9 @@ public class Player_Controller : MonoBehaviour
     {
         Team = m_Team;
     }
-    public bool Setup(Unit_Manager UM,Resource_Manager RM)
+    public bool Setup(Unit_Manager UM,Resource_Manager RM, Camera cam,GameObject floor)
     {
+        
         bool success = true;
         if(UM.Team == m_Team)
         {
@@ -51,6 +52,7 @@ public class Player_Controller : MonoBehaviour
         else
         {
             success = false;
+            print("Unit manager for player " + m_Team + " failed"); 
         }
         if(RM.Team == m_Team)
         {
@@ -59,7 +61,14 @@ public class Player_Controller : MonoBehaviour
         else
         {
             success = false;
+            print("Resource manager for player " + m_Team + " failed");
         }
+        Camera_Ref = cam;
+        Floor = floor;
+        Zoom_Sensitivity = 0.5f;
+        Pan_Sensitivity = 0.2f;
+        Max_Zoom_Height = 30;
+        Min_Zoom_Height = 10;
         return success;
     }
     
