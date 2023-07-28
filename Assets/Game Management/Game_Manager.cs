@@ -16,7 +16,6 @@ public class Game_Manager : MonoBehaviour
             GameObject player = new GameObject();
             player.name = "Player " + i;
             Player_Controller controller = player.AddComponent<Player_Controller>();
-            c
             controller.m_Team = i;
 
             GameObject player_cam = new GameObject();
