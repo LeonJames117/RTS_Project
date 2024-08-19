@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Projectiles;
+using Units;
 
 
 public class Artilery : Structure_Base
@@ -40,7 +42,7 @@ public class Artilery : Structure_Base
     private void Update()
     {
         //Rotate Turret to face target
-        Vector3 Target_Direction = Turret.transform.position - U.Target;
+        Vector3 Target_Direction = Turret.transform.position - U.target;
         float Speed = 1f;
         Vector3 New_Facing = Vector3.RotateTowards(Turret.transform.forward, Target_Direction, Speed * Time.deltaTime, 0.0f);
         Debug.DrawRay(Turret.transform.position, New_Facing, Color.red);
@@ -54,7 +56,7 @@ public class Artilery : Structure_Base
         {
             Ready_to_Fire = false;
         }
-        if(Time.time >= Next_Fire_Time && U.Target != Vector3.zero)
+        if(Time.time >= Next_Fire_Time && U.target != Vector3.zero)
         {// If the currtent time is later than the next time the cannon is able to fire after being reloaded
             if (Ready_to_Fire)
             {// And it is facing the target
@@ -66,8 +68,8 @@ public class Artilery : Structure_Base
 
     Vector3 Calculate_Launch_Parameters(Rigidbody Shell)
     {// Calculates the velocity neccicary to hit the target location whilst traveling in an arc peaking at Max_Projectile_Height
-        float Y_Displacement = U.Target.y - Shell.position.y;
-        Vector3 XZ_Displacement = new Vector3(U.Target.x - Shell.position.x,0,  U.Target.z - Shell.position.z);
+        float Y_Displacement = U.target.y - Shell.position.y;
+        Vector3 XZ_Displacement = new Vector3(U.target.x - Shell.position.x,0,  U.target.z - Shell.position.z);
         float Flight_Time = Mathf.Sqrt(-2 * Max_Projectile_Height / Gravity) + Mathf.Sqrt(2 * (Y_Displacement - Max_Projectile_Height) / Gravity);
         Vector3 Y_Velocity = Vector3.up * Mathf.Sqrt(-2 * Gravity * Max_Projectile_Height); //Kinematic Equation
         Vector3 XZ_Velocity = XZ_Displacement / Flight_Time;
@@ -81,9 +83,9 @@ public class Artilery : Structure_Base
         Projectile Shell = temp.GetComponent<Projectile>();
         temp.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
         Physics.gravity = Vector3.up * Gravity;
-        Shell.Set_Target(U.Target);
+        Shell.Set_Target(U.target);
         RigidBod.velocity = Calculate_Launch_Parameters(RigidBod);
-        Shell.Starting_Velocity = Calculate_Launch_Parameters(RigidBod);
+        Shell.startingVelocity = Calculate_Launch_Parameters(RigidBod);
         print("Shell_Vel = "+ Calculate_Launch_Parameters(RigidBod));
     }
 }

@@ -1,127 +1,131 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
-
-public class Unit : MonoBehaviour
+using UnityEngine.Serialization;
+using Utility_Scripts;
+namespace Units
 {
-    // Start is called before the first frame update
-    public Vector3 Target;
-    public float Speed = 10;
-    public Vector3[] Current_Path;
-    public int Current_Waypoint_Index;
-    float Rotation_Speed = 3;
-    public Unit_Manager U_Man;
-    public GameObject Selection_Graphic;
-    public bool Following_Path;
-    public bool Is_Structre = false;
-
-
-   
-
-
-    public List<Vector3> Order_Queue = new List<Vector3>();
-    void Start()
+    public class Unit : MonoBehaviour
     {
-        U_Man.All_Units.Add(this);
-        if(GetComponent<Structure_Base>() != null)
-        {
-            Is_Structre = true;
-        }
-        Selection_Graphic.SetActive(false);
-
-    }
-
-    private void Update()
-    {
+        // Start is called before the first frame update
+        [FormerlySerializedAs("Target")] public Vector3 target;
+        [FormerlySerializedAs("Speed")] public float speed = 10;
+        [FormerlySerializedAs("Current_Path")] public Vector3[] currentPath;
+        [FormerlySerializedAs("Current_Waypoint_Index")] public int currentWaypointIndex;
+        private const float RotationSpeed = 3;
+        [FormerlySerializedAs("U_Man")] public UnitManager uMan;
+        [FormerlySerializedAs("Selection_Graphic")] public GameObject selectionGraphic;
+        [FormerlySerializedAs("Following_Path")] public bool followingPath;
+        [FormerlySerializedAs("Is_Structure")] public bool isStructure = false;
         
-    }
-    public void Update_Path()
-    {
-        Unit_Manager.RequestPath(transform.position, Target, On_Path_Found);
-        print("Pathfinding Started");
-    }
-    public void On_Path_Found(Vector3[]New_Path,bool Path_Found)
-    {
-        if(Path_Found)
+
+        [FormerlySerializedAs("Unit_Type")] [SerializeField] SharedTypes.UnitType unitType;
+   
+        
+
+        [FormerlySerializedAs("Order_Queue")] public List<Vector3> orderQueue = new List<Vector3>();
+      
+       
+
+        public Unit(string unitType)
         {
-            if (New_Path != Current_Path)
-            {
-                Current_Path = New_Path;
-                StopCoroutine("Follow_Path");
-                StartCoroutine("Follow_Path");
-            }
             
         }
-    }
-    public void OnDrawGizmos()
-    {
-        if (Current_Path != null && Following_Path)
+
+        void Start()
         {
-            for (int i = Current_Waypoint_Index; i < Current_Path.Length; i++)
+            uMan.allUnits.Add(this);
+            if(GetComponent<Structure_Base>() != null)
+            {
+                isStructure = true;
+            }
+            selectionGraphic.SetActive(false);
+
+            
+        }
+
+        private void Update()
+        {
+            
+        }
+        public void Update_Path()
+        {
+            UnitManager.RequestPath(transform.position,target, unitType, On_Path_Found);
+            print("Pathfinding Started");
+        }
+        public void On_Path_Found(Vector3[]newPath,bool pathFound)
+        {
+            if(pathFound)
+            {
+                if (newPath != currentPath)
+                {
+                    currentPath = newPath;
+                    StopCoroutine(nameof(Follow_Path));
+                    StartCoroutine(nameof(Follow_Path));
+                }
+            
+            }
+        }
+        public void OnDrawGizmos()
+        {
+            if (currentPath == null || !followingPath) return;
+            for (var i = currentWaypointIndex; i < currentPath.Length; i++)
             {
                 Gizmos.color = Color.black;
-                Gizmos.DrawCube(Current_Path[i], Vector3.one);
+                Gizmos.DrawCube(currentPath[i], Vector3.one);
 
-                if (i == Current_Waypoint_Index)
-                {
-                    Gizmos.DrawLine(transform.position, Current_Path[i]);
-                }
-                else
-                {
-                    Gizmos.DrawLine(Current_Path[i - 1], Current_Path[i]);
-                }
+                Gizmos.DrawLine(i == currentWaypointIndex ? transform.position : currentPath[i - 1], currentPath[i]);
             }
         }
-    }
 
 
-    IEnumerator Follow_Path()
-    {
+        IEnumerator Follow_Path()
+        {
         
 
-        Following_Path = true;
-        Vector3 Current_Waypoint = Current_Path[0];
-        while (true)
-        {
-            if (transform.position == Current_Waypoint)
+            followingPath = true;
+            var currentWaypoint = currentPath[0];
+            while (true)
             {
-                Current_Waypoint_Index++;
-                if (Current_Waypoint_Index >= Current_Path.Length)
+                if (transform.position == currentWaypoint)
                 {
-                    print("Finshed Path");
-                    Current_Waypoint_Index = 0;
-                    Stop_Following_Path();
-                    yield break;
+                    currentWaypointIndex++;
+                    if (currentWaypointIndex >= currentPath.Length)
+                    {
+                        print("Finished Path");
+                        currentWaypointIndex = 0;
+                        Stop_Following_Path();
+                        yield break;
+                    }
+                    currentWaypoint = currentPath[currentWaypointIndex];
                 }
-                Current_Waypoint = Current_Path[Current_Waypoint_Index];
-            }
             
 
-            Vector3 targetDir = Current_Waypoint - this.transform.position;
-            float step = Rotation_Speed * Time.deltaTime;
-            Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0F);
-            transform.rotation = Quaternion.LookRotation(newDir);
+                Vector3 targetDir = currentWaypoint - this.transform.position;
+                float step = RotationSpeed * Time.deltaTime;
+                Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0F);
+                transform.rotation = Quaternion.LookRotation(newDir);
 
-            transform.position = Vector3.MoveTowards(transform.position, Current_Waypoint, Speed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
 
-            yield return null;
+                yield return null;
+            }
         }
-    }
 
-    void Stop_Following_Path()
-    {
+        void Stop_Following_Path()
+        {
 
         
-        StopCoroutine("Follow_Path");
-        Following_Path = false;
-        if(Order_Queue.Count > 0)
-        {
-            Target = Order_Queue[0];
-            Order_Queue.RemoveAt(0);
+            StopCoroutine(nameof(Follow_Path));
+            followingPath = false;
+            if (orderQueue.Count <= 0) return;
+            target = orderQueue[0];
+            orderQueue.RemoveAt(0);
             Update_Path();
         }
-    }
 
+    }
 }
 
 
