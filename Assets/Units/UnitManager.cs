@@ -13,16 +13,16 @@ namespace Units
         PathRequest _currentRequest;
         static UnitManager _instance;
         PathfindingManager _pathfinding;
-        [FormerlySerializedAs("All_Units")] public List<Unit> allUnits = new List<Unit>();
-        [FormerlySerializedAs("Selected_Units")] public List<Unit> selectedUnits = new List<Unit>();
-        List<Vector3> _orderQueue = new List<Vector3>();
+        [FormerlySerializedAs("Following_Path")] public bool followingPath;
+        [FormerlySerializedAs("All_Units")] public List<UnitBase> allUnits = new List<UnitBase>();
+        [FormerlySerializedAs("Selected_Units")] public List<UnitBase> selectedUnits = new List<UnitBase>();
+        
         
         bool _currentlyProcessingPath;
         private void Awake()
         {
             _instance = this;
             _pathfinding=GetComponent<PathfindingManager>();
-        
         }
     
         public static void RequestPath(Vector3 start, Vector3 target, SharedTypes.UnitType unitType, Action<Vector3[], bool> callback)

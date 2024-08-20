@@ -80,9 +80,9 @@ namespace Projectiles
             {// Increase Node's threat Values
                 Node.Threat += 20;
             }
-            foreach(Unit unit in unitManager.allUnits)
+            foreach(MobileUnit unit in unitManager.allUnits)
             {
-                if (!unit.isStructure && unit.followingPath)
+                if (unit.followingPath)
                 {// if the unit is not a structure and is currently following a path, make it update it's path
                     unit.Update_Path();
                 }

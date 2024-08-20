@@ -6,24 +6,22 @@ using UnityEngine.Serialization;
 using Utility_Scripts;
 namespace Units
 {
-    public class Unit : MonoBehaviour
+    public class MobileUnit : UnitBase
     {
         // Start is called before the first frame update
-        [FormerlySerializedAs("Target")] public Vector3 target;
+        
         [FormerlySerializedAs("Speed")] public float speed = 10;
         [FormerlySerializedAs("Current_Path")] public Vector3[] currentPath;
         [FormerlySerializedAs("Current_Waypoint_Index")] public int currentWaypointIndex;
         private const float RotationSpeed = 3;
         [FormerlySerializedAs("U_Man")] public UnitManager uMan;
-        [FormerlySerializedAs("Selection_Graphic")] public GameObject selectionGraphic;
         [FormerlySerializedAs("Following_Path")] public bool followingPath;
-        [FormerlySerializedAs("Is_Structure")] public bool isStructure = false;
         [FormerlySerializedAs("Unit_Type")] [SerializeField] SharedTypes.UnitType unitType;
-        [FormerlySerializedAs("Order_Queue")] public List<Vector3> orderQueue = new List<Vector3>();
+        
       
        
 
-        public Unit(string unitType)
+        public MobileUnit(string unitType)
         {
             
         }
@@ -31,13 +29,9 @@ namespace Units
         void Start()
         {
             uMan.allUnits.Add(this);
-            if(GetComponent<Structure_Base>() != null)
-            {
-                isStructure = true;
-            }
             selectionGraphic.SetActive(false);
-
             
+
         }
 
         private void Update()
@@ -59,7 +53,6 @@ namespace Units
                     StopCoroutine(nameof(Follow_Path));
                     StartCoroutine(nameof(Follow_Path));
                 }
-            
             }
         }
         public void OnDrawGizmos()
@@ -77,8 +70,6 @@ namespace Units
 
         IEnumerator Follow_Path()
         {
-        
-
             followingPath = true;
             var currentWaypoint = currentPath[0];
             while (true)
@@ -95,8 +86,6 @@ namespace Units
                     }
                     currentWaypoint = currentPath[currentWaypointIndex];
                 }
-            
-
                 Vector3 targetDir = currentWaypoint - this.transform.position;
                 float step = RotationSpeed * Time.deltaTime;
                 Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0F);
@@ -110,8 +99,6 @@ namespace Units
 
         void Stop_Following_Path()
         {
-
-        
             StopCoroutine(nameof(Follow_Path));
             followingPath = false;
             if (orderQueue.Count <= 0) return;

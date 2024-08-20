@@ -48,15 +48,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9df050667a072742afd2bebece9adcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Target: {x: 0, y: 0, z: 0}
-  Speed: 3
-  Current_Path: []
-  Current_Waypoint_Index: 0
-  U_Man: {fileID: 0}
-  Selection_Graphic: {fileID: 7862151281337524279}
-  Following_Path: 0
-  Is_Structre: 0
-  Order_Queue: []
+  isStructure: 0
+  selectionGraphic: {fileID: 7862151281337524279}
+  orderQueue: []
+  target: {x: 0, y: 0, z: 0}
+  speed: 3
+  currentPath: []
+  currentWaypointIndex: 0
+  uMan: {fileID: 0}
+  followingPath: 0
+  unitType: 0
 --- !u!54 &2061138120820312344
 Rigidbody:
   m_ObjectHideFlags: 0

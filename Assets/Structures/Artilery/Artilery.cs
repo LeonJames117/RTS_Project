@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Projectiles;
+using Structures;
 using Units;
 
 
-public class Artilery : Structure_Base
+public class Artilery : StructureBase
 {
     // Prefab setup
     public GameObject Cannon;
     public GameObject Turret;
     public GameObject Projectile;
     public Transform Fire_Point;
-    Unit U;
+    UnitBase U;
 
     // Projectile Physics
     public float Max_Projectile_Height;
@@ -35,7 +36,7 @@ public class Artilery : Structure_Base
     {
         Cannon_Starting_Y = Cannon.transform.localRotation.y;
         Cannon_Starting_Z = Cannon.transform.localRotation.z;
-        U = GetComponent<Unit>();
+        U = GetComponent<UnitBase>();
     }
 
 

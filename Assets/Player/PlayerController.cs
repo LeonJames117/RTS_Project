@@ -1,8 +1,10 @@
+using Structures;
 using Units;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Unit = Units.Unit;
+using UnitBase = Units.UnitBase;
+using MobileUnit = Units.MobileUnit;
 
 namespace Player
 {
@@ -27,7 +29,7 @@ namespace Player
         // Base Building
         [Header("Base Building")]
         bool _buildingMode = false;
-        Structure_Base _selectedBuilding;
+        StructureBase _selectedBuilding;
         [FormerlySerializedAs("Grid")] public Pathfinding_Grid grid;
         Material _startMat;
         [FormerlySerializedAs("Can_Build")] public Material canBuild;
@@ -88,10 +90,10 @@ namespace Player
             {
                 print("Mouse Down");
                 Ray ray = cameraRef.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out RaycastHit hit,Mathf.Infinity,unwalkableLayer) && hit.collider.gameObject.GetComponent<Unit>()!=null)
+                if (Physics.Raycast(ray, out RaycastHit hit,Mathf.Infinity,unwalkableLayer) && hit.collider.gameObject.GetComponent<UnitBase>()!=null)
                 { 
                     print("Unit Selction started");
-                    Unit selectedUnit = hit.collider.gameObject.GetComponent<Unit>();
+                    UnitBase selectedUnit = hit.collider.gameObject.GetComponent<UnitBase>();
                     Selection_Eligibility(selectedUnit);
                     if (Input.GetKey(KeyCode.LeftShift))
                     {// Shift Left Clicking
@@ -108,7 +110,7 @@ namespace Player
                     }
                     else
                     {// Single Left Clicking
-                        Single_Select(hit.collider.gameObject.GetComponent<Unit>());
+                        Single_Select(hit.collider.gameObject.GetComponent<UnitBase>());
                     }
                 }
                 else
@@ -130,27 +132,28 @@ namespace Player
                 Ray ray = cameraRef.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, ground) && uManager.selectedUnits.Count > 0)
                 {// If player right clicks on the ground and has units selected
-                    foreach (Unit unit in uManager.selectedUnits)
+                    foreach (UnitBase unit in uManager.selectedUnits)
                     {
-                        if (!unit.isStructure)
+                        if (unit is MobileUnit)
                         {
+                            MobileUnit MobUnit = (MobileUnit) unit;
                             if(Input.GetKey(KeyCode.LeftShift))
                             {// Shift right click
-                                if (!unit.followingPath)
+                                if (!MobUnit.followingPath)
                                 {// If the unit is not currently following a path treat as normal click without clearing the order queue
-                                    unit.target = hit.point;
-                                    unit.Update_Path();
+                                    MobUnit.target = hit.point;
+                                    MobUnit.Update_Path();
                                 }
                                 else
                                 {// If unit is following a path add the new target to it's order queue
-                                    unit.orderQueue.Add(hit.point);
+                                    MobUnit.orderQueue.Add(hit.point);
                                 }  
                             }
                             else
                             {// Basic right click
                                 unit.orderQueue.Clear();
                                 unit.target = hit.point;
-                                unit.Update_Path();
+                                MobUnit.Update_Path();
                                 print("Unit Ordered");
                                 if (_buildingMode)
                                 {
@@ -224,7 +227,7 @@ namespace Player
         }
 
         //Selection
-        void Single_Select(Unit unitToAdd)
+        void Single_Select(UnitBase unitToAdd)
         {// Selcting one unit without wanting to have any others selected
             Clear_Selection();
             print("Single Select");
@@ -232,7 +235,7 @@ namespace Player
             unitToAdd.selectionGraphic.SetActive(true);
         }
 
-        void Shift_Select(Unit unitToAdd)
+        void Shift_Select(UnitBase unitToAdd)
         {// Selecting one unit with the intention to select more
             if (!uManager.selectedUnits.Contains(unitToAdd))
             {
@@ -253,28 +256,28 @@ namespace Player
 
         void Clear_Selection()
         {// Clear the current selction
-            foreach(Unit unit in uManager.selectedUnits)
+            foreach(UnitBase unit in uManager.selectedUnits)
             {
                 unit.selectionGraphic.SetActive(false);
             }
             uManager.selectedUnits.Clear();
         }
 
-        void Deselect_Sngle(Unit unitToRemove)
+        void Deselect_Sngle(UnitBase unitToRemove)
         {// Remove a specifed unit from current selection
             unitToRemove.selectionGraphic.SetActive(false);
             uManager.selectedUnits.Remove(unitToRemove);  
         }
 
-        bool Selection_Eligibility(Unit unit)
+        bool Selection_Eligibility(UnitBase unit)
         {
             if (unit.CompareTag("Selectable")) return true;
             print("Could not select " + unit.name + " Tag: "+unit.tag);
             return false;
         }
-        public void Enter_Build_Mode(Structure_Base structureToBuild)
+        public void Enter_Build_Mode(StructureBase structureToBuild)
         {
-            Structure_Base newBuilding = Instantiate(structureToBuild);
+            StructureBase newBuilding = Instantiate(structureToBuild);
             _selectedBuilding = newBuilding;
             _startMat = newBuilding.GetComponent<MeshRenderer>().material;
             newBuilding.GetComponent<Renderer>().material = canBuild;

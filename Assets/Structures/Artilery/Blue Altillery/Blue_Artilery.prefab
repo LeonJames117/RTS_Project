@@ -1642,7 +1642,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3750720363810821900}
   - component: {fileID: 2043375732715763346}
-  - component: {fileID: 583149207806325333}
+  - component: {fileID: 7581588047448434881}
   m_Layer: 8
   m_Name: Blue_Artilery
   m_TagString: Untagged
@@ -1680,6 +1680,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6ffbb9313284ab4280d66065a04c0f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isStructure: 0
+  selectionGraphic: {fileID: 0}
+  orderQueue: []
+  target: {x: 0, y: 0, z: 0}
   Cannon: {fileID: 7821203886287571160}
   Turret: {fileID: 2229819813936667455}
   Projectile: {fileID: 6543923533120421409, guid: d5af32a07005b4642ab27b0ce3479946, type: 3}
@@ -1688,7 +1692,7 @@ MonoBehaviour:
   Gravity: -18
   Reload_Time: 5
   Ready_to_Fire: 0
---- !u!114 &583149207806325333
+--- !u!114 &7581588047448434881
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1697,18 +1701,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7045573056194784454}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9df050667a072742afd2bebece9adcc, type: 3}
+  m_Script: {fileID: 11500000, guid: 67af1bd0856f3884382f19256ca524df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Target: {x: 0, y: 0, z: 0}
-  Speed: 10
-  Current_Path: []
-  Current_Waypoint_Index: 0
-  U_Man: {fileID: 0}
-  Selection_Graphic: {fileID: 2795066066936557037}
-  Following_Path: 0
-  Is_Structre: 0
-  Order_Queue: []
+  isStructure: 0
+  selectionGraphic: {fileID: 0}
+  orderQueue: []
+  target: {x: 0, y: 0, z: 0}
 --- !u!1 &7821203886287571160
 GameObject:
   m_ObjectHideFlags: 0
