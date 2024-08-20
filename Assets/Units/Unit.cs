@@ -18,12 +18,7 @@ namespace Units
         [FormerlySerializedAs("Selection_Graphic")] public GameObject selectionGraphic;
         [FormerlySerializedAs("Following_Path")] public bool followingPath;
         [FormerlySerializedAs("Is_Structure")] public bool isStructure = false;
-        
-
         [FormerlySerializedAs("Unit_Type")] [SerializeField] SharedTypes.UnitType unitType;
-   
-        
-
         [FormerlySerializedAs("Order_Queue")] public List<Vector3> orderQueue = new List<Vector3>();
       
        
@@ -52,7 +47,7 @@ namespace Units
         public void Update_Path()
         {
             UnitManager.RequestPath(transform.position,target, unitType, On_Path_Found);
-            print("Pathfinding Started");
+            print("Unit Requested path");
         }
         public void On_Path_Found(Vector3[]newPath,bool pathFound)
         {

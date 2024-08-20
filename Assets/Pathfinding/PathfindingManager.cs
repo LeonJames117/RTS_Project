@@ -31,6 +31,7 @@ namespace Pathfinding
         }
         IEnumerator Find_New_Path(Vector3 Start, Vector3 Target, SharedTypes.UnitType unitType)
         {
+            print("Pathfinding Started");
             Pathfinding_Grid Path_Grid;
             if (unitType == SharedTypes.UnitType.Land)
             {
@@ -55,10 +56,74 @@ namespace Pathfinding
             bool Path_Found = false;
             Node StartN = Path_Grid.Find_Node_By_Pos(Start);
             Node TargetN = Path_Grid.Find_Node_By_Pos(Target);
-
-            if(TargetN.Walkable)// Only attempts to find path if it is possbile to reach the end
+            if (StartN == null || TargetN == null)
             {
-                Heap<Node> Open_Nodes = new Heap<Node>(Path_Grid.Node_Num);
+                print("Start or end Node is NULL");
+                yield break;
+            }
+
+            if (!TargetN.Walkable) // Redirects the target to the closest walkable node, or cancels the pathfinding if a new path is taking too long to find
+            {
+                print("Node cannot be reached: Redirecting to walkable node");
+                List<Node> nodeNeighbours = Path_Grid.Find_Node_Neighbours(TargetN); 
+                Node furthestCheckedNode = nodeNeighbours[0];
+                List<Node> checkedNodes = new List<Node>();
+                Node candidateNode = null;
+                float checkRadius = 0;
+                int i = 0;
+                const int allowance = 100;// Sets how many groups of nodes can be checked before the system gives up for performance’s sake(This should be a rare edge case)
+                while (candidateNode==null || i<allowance)
+                {
+                    foreach (var node in nodeNeighbours)
+                    {
+                        if (checkedNodes.Contains(node)) continue;
+                        print("Inspecting node: " + node.Pos);
+                        float distance = Vector3.Distance(node.Pos,TargetN.Pos);
+                        if (distance > checkRadius)// slowly expands how far away from the original target will be checked until a walkable candidate is found
+                        {
+                            if (node.Walkable)
+                            {
+                                candidateNode = node;
+                            }
+                            if (!checkedNodes.Contains(node))
+                            {
+                                furthestCheckedNode = node;
+                                checkRadius = distance;
+                            }
+                        }
+                        if (node.Walkable)//prioritises walkable over distance
+                        {
+                            candidateNode = node;
+                        }
+                    }
+                    if (candidateNode != null) // A walkable node has been found
+                    {
+                        print("Candidate found: " + candidateNode.Pos + " walkable " + candidateNode.Walkable);
+                        break;
+                    }
+                    print("Node " + furthestCheckedNode.Pos + "is the current closest node and walkable is: " + furthestCheckedNode.Walkable);
+                    if (!furthestCheckedNode.Walkable) // No walkable node is found, prevents previously checked sets of nodes from being checked again, thus expanding the search radius
+                    {
+                        nodeNeighbours = Path_Grid.Find_Node_Neighbours(furthestCheckedNode); 
+                        checkedNodes.Add(furthestCheckedNode);
+                        print("Next closest node cannot be reached: attempting redirection # "+ i +" at " + SW.ElapsedMilliseconds + " milliseconds");
+                    }
+                    
+                    print("Checked " + (i+1) + " sets of nodes, current closest node is: " + furthestCheckedNode.Pos + " and walkable is " + furthestCheckedNode.Walkable);
+                    i++;
+                    if(i==allowance) break;
+                }
+                if (i == allowance) // Stops pathfinding if redirection is taking too long
+                {
+                    print("Redirection not possible: canceling pathfinding");
+                    Unit_Manager.Finished_Path_Processing(Array.Empty<Vector3>(), false);
+                    yield break;
+                }
+                TargetN = candidateNode;
+                print("Redirection complete in " + SW.ElapsedMilliseconds + " milliseconds");
+            }
+
+            Heap<Node> Open_Nodes = new Heap<Node>(Path_Grid.Node_Num);
                 HashSet<Node> Closed_Nodes = new HashSet<Node>();
 
                 Open_Nodes.Add(StartN);
@@ -107,7 +172,8 @@ namespace Pathfinding
                     }
                 }
 
-            }
+            
+            
             yield return null;
             if (Path_Found)
             {

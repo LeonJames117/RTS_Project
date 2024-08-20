@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Artilery Cannon
+  - Selectable
   layers:
   - Default
   - TransparentFX

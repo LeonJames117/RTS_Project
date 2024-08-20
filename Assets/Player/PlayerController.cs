@@ -1,6 +1,8 @@
 using Units;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Unit = Units.Unit;
 
 namespace Player
 {
@@ -20,7 +22,7 @@ namespace Player
         [FormerlySerializedAs("U_Manager")] [Header("Unit Management")]
         public UnitManager uManager;
         Vector3 _mouseStartPos;
-        [FormerlySerializedAs("Selectable")] public LayerMask selectable;
+        [FormerlySerializedAs("Unwalkable")] public LayerMask unwalkableLayer;
         [FormerlySerializedAs("Ground")] public LayerMask ground;
         // Base Building
         [Header("Base Building")]
@@ -30,7 +32,7 @@ namespace Player
         Material _startMat;
         [FormerlySerializedAs("Can_Build")] public Material canBuild;
         [FormerlySerializedAs("Cannot_Build")] public Material cannotBuild;
-        [FormerlySerializedAs("Ignore_Build_Block")] public LayerMask ignoreBuildBlock;
+        public LayerMask Block_Building;
         bool _buildBlocked = false;
 
         void Update()
@@ -84,22 +86,25 @@ namespace Player
             // Unit Selection + Ordering controls
             if (Input.GetMouseButtonDown(0))// Left Mouse pressed
             {
+                print("Mouse Down");
                 Ray ray = cameraRef.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out RaycastHit hit,Mathf.Infinity,selectable))
-                {
+                if (Physics.Raycast(ray, out RaycastHit hit,Mathf.Infinity,unwalkableLayer) && hit.collider.gameObject.GetComponent<Unit>()!=null)
+                { 
+                    print("Unit Selction started");
+                    Unit selectedUnit = hit.collider.gameObject.GetComponent<Unit>();
+                    Selection_Eligibility(selectedUnit);
                     if (Input.GetKey(KeyCode.LeftShift))
                     {// Shift Left Clicking
-                        Unit selectedUnit = hit.collider.gameObject.GetComponent<Unit>();
-                        if (!uManager.selectedUnits.Contains(selectedUnit))
-                        {
-                        
-                            Shift_Select(selectedUnit);
-                        }
-                        else
-                        {
-                            Deselect_Sngle(selectedUnit);
-                        }
-                    
+                            
+                            if (!uManager.selectedUnits.Contains(selectedUnit))
+                            {
+                                
+                                Shift_Select(selectedUnit);
+                            }
+                            else
+                            {
+                                Deselect_Sngle(selectedUnit);
+                            }
                     }
                     else
                     {// Single Left Clicking
@@ -146,6 +151,12 @@ namespace Player
                                 unit.orderQueue.Clear();
                                 unit.target = hit.point;
                                 unit.Update_Path();
+                                print("Unit Ordered");
+                                if (_buildingMode)
+                                {
+                                    _buildingMode = false;
+                                    print("Exited Building");
+                                }
                             } 
                         }
                         else
@@ -168,7 +179,7 @@ namespace Player
                 {
                     //print("No Ground hit");
                 }
-                Collider[] colliders = Physics.OverlapBox(_selectedBuilding.transform.position, _selectedBuilding.transform.localScale/2, Quaternion.identity, ignoreBuildBlock);
+                Collider[] colliders = Physics.OverlapBox(_selectedBuilding.transform.position, _selectedBuilding.transform.localScale/2, Quaternion.identity, Block_Building);
                 if(colliders.Length > 0)
                 {
                 
@@ -178,30 +189,36 @@ namespace Player
                         print("Collided with " + blocker.name);
                         if (blocker.name != _selectedBuilding.name)
                         {
+                            
                             _selectedBuilding.GetComponent<Renderer>().material = cannotBuild;
                             print("Build blocked by " + colliders[0].name);
                             _buildBlocked = true;
                             break;
                         }
-                        else
-                        {
-                            print("Build not blocked by " + blocker.name);
-                            _selectedBuilding.GetComponent<Renderer>().material = canBuild;
-                            _buildBlocked = false;
-                        }
+                        
+                        print("Build not blocked by " + blocker.name);
+                        _selectedBuilding.GetComponent<Renderer>().material = canBuild;
+                        
+                        
                     }
                     
                 }
                 else
                 {
                     _selectedBuilding.GetComponent<Renderer>().material = canBuild;
+                    _buildBlocked = false;
                 }
 
                 if (Input.GetMouseButtonDown(0) && !_buildBlocked)
                 {
                     _selectedBuilding.GetComponent<Renderer>().material = _startMat;
+                    //_selectedBuilding.gameObject.layer = unwalkableLayer;
                     _buildingMode = false;
-                    print("Build Mode False");
+                    print("Exited Building");
+                }
+                else if (Input.GetMouseButtonDown(0) && _buildBlocked)
+                {
+                    print("Cannot Build, Number of coliders: " + colliders.Length);
                 }
             }
         }
@@ -248,7 +265,13 @@ namespace Player
             unitToRemove.selectionGraphic.SetActive(false);
             uManager.selectedUnits.Remove(unitToRemove);  
         }
-    
+
+        bool Selection_Eligibility(Unit unit)
+        {
+            if (unit.CompareTag("Selectable")) return true;
+            print("Could not select " + unit.name + " Tag: "+unit.tag);
+            return false;
+        }
         public void Enter_Build_Mode(Structure_Base structureToBuild)
         {
             Structure_Base newBuilding = Instantiate(structureToBuild);
@@ -256,6 +279,7 @@ namespace Player
             _startMat = newBuilding.GetComponent<MeshRenderer>().material;
             newBuilding.GetComponent<Renderer>().material = canBuild;
             _buildingMode = true;
+            print("Entered Building");
         }
     }
 }

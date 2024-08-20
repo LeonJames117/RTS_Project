@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Pathfinding;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.Serialization;
 using Utility_Scripts;
 namespace Units
@@ -15,6 +16,7 @@ namespace Units
         [FormerlySerializedAs("All_Units")] public List<Unit> allUnits = new List<Unit>();
         [FormerlySerializedAs("Selected_Units")] public List<Unit> selectedUnits = new List<Unit>();
         List<Vector3> _orderQueue = new List<Vector3>();
+        
         bool _currentlyProcessingPath;
         private void Awake()
         {
@@ -44,13 +46,21 @@ namespace Units
         public void Finished_Path_Processing(Vector3[] path, bool success)
         {
             _currentRequest.Callback(path,success);
+            print("Path processing finished");
             _currentlyProcessingPath=false;
             Process_Next();
         }
 
-    
+        void Update()
+        {
+            if (!_currentlyProcessingPath && _requestQueue.Count > 0)
+            {
+                Process_Next();
+            }
+            //print("Currently " + _requestQueue.Count + " requests queued");
+        }
 
-        struct PathRequest
+        public struct PathRequest
         {
             public readonly Vector3 Start;
             public readonly Vector3 Target;
