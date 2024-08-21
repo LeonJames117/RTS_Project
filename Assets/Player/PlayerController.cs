@@ -1,6 +1,7 @@
 using Structures;
 using Units;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnitBase = Units.UnitBase;
@@ -94,13 +95,11 @@ namespace Player
                 { 
                     print("Unit Selction started");
                     UnitBase selectedUnit = hit.collider.gameObject.GetComponent<UnitBase>();
-                    Selection_Eligibility(selectedUnit);
                     if (Input.GetKey(KeyCode.LeftShift))
                     {// Shift Left Clicking
                             
                             if (!uManager.selectedUnits.Contains(selectedUnit))
                             {
-                                
                                 Shift_Select(selectedUnit);
                             }
                             else
@@ -136,24 +135,24 @@ namespace Player
                     {
                         if (unit is MobileUnit)
                         {
-                            MobileUnit MobUnit = (MobileUnit) unit;
+                            MobileUnit mobUnit = (MobileUnit) unit;
                             if(Input.GetKey(KeyCode.LeftShift))
                             {// Shift right click
-                                if (!MobUnit.followingPath)
+                                if (!mobUnit.followingPath)
                                 {// If the unit is not currently following a path treat as normal click without clearing the order queue
-                                    MobUnit.target = hit.point;
-                                    MobUnit.Update_Path();
+                                    mobUnit.target = hit.point;
+                                    mobUnit.Update_Path();
                                 }
                                 else
                                 {// If unit is following a path add the new target to it's order queue
-                                    MobUnit.orderQueue.Add(hit.point);
+                                    mobUnit.orderQueue.Add(hit.point);
                                 }  
                             }
                             else
                             {// Basic right click
                                 unit.orderQueue.Clear();
                                 unit.target = hit.point;
-                                MobUnit.Update_Path();
+                                mobUnit.Update_Path();
                                 print("Unit Ordered");
                                 if (_buildingMode)
                                 {
@@ -182,7 +181,7 @@ namespace Player
                 {
                     //print("No Ground hit");
                 }
-                Collider[] colliders = Physics.OverlapBox(_selectedBuilding.transform.position, _selectedBuilding.transform.localScale/2, Quaternion.identity, Block_Building);
+                Collider[] colliders = Physics.OverlapBox(_selectedBuilding.transform.position, _selectedBuilding.model.transform.localScale/2, Quaternion.identity, Block_Building);
                 if(colliders.Length > 0)
                 {
                 
@@ -193,7 +192,7 @@ namespace Player
                         if (blocker.name != _selectedBuilding.name)
                         {
                             
-                            _selectedBuilding.GetComponent<Renderer>().material = cannotBuild;
+                            _selectedBuilding.model.material = cannotBuild;
                             print("Build blocked by " + colliders[0].name);
                             _buildBlocked = true;
                             break;
@@ -208,14 +207,15 @@ namespace Player
                 }
                 else
                 {
-                    _selectedBuilding.GetComponent<Renderer>().material = canBuild;
+                    _selectedBuilding.model.material = canBuild;
                     _buildBlocked = false;
                 }
 
                 if (Input.GetMouseButtonDown(0) && !_buildBlocked)
                 {
-                    _selectedBuilding.GetComponent<Renderer>().material = _startMat;
-                    //_selectedBuilding.gameObject.layer = unwalkableLayer;
+                    _selectedBuilding.model.material = _startMat;
+                    _selectedBuilding.uMan = uManager;
+                    _selectedBuilding.model.gameObject.layer = 6;
                     _buildingMode = false;
                     print("Exited Building");
                 }
@@ -271,16 +271,15 @@ namespace Player
 
         bool Selection_Eligibility(UnitBase unit)
         {
-            if (unit.CompareTag("Selectable")) return true;
-            print("Could not select " + unit.name + " Tag: "+unit.tag);
+            if (unit.selectable) return true;
             return false;
         }
         public void Enter_Build_Mode(StructureBase structureToBuild)
         {
             StructureBase newBuilding = Instantiate(structureToBuild);
             _selectedBuilding = newBuilding;
-            _startMat = newBuilding.GetComponent<MeshRenderer>().material;
-            newBuilding.GetComponent<Renderer>().material = canBuild;
+            _startMat = newBuilding.model.material;
+            newBuilding.model.material = canBuild;
             _buildingMode = true;
             print("Entered Building");
         }

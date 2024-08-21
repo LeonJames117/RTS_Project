@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Utility_Scripts;
 
 namespace Units
 {
@@ -11,9 +12,13 @@ namespace Units
         public GameObject selectionGraphic;
         public List<Vector3> orderQueue = new List<Vector3>();
         public Vector3 target;
+        public bool selectable;
+        public SharedTypes.UnitType unitType;
+        public UnitManager uMan;
         void Start()
         {
-        
+            uMan.allUnits.Add(this);
+            selectionGraphic.SetActive(false);
         }
 
         // Update is called once per frame

@@ -14,26 +14,8 @@ namespace Units
         [FormerlySerializedAs("Current_Path")] public Vector3[] currentPath;
         [FormerlySerializedAs("Current_Waypoint_Index")] public int currentWaypointIndex;
         private const float RotationSpeed = 3;
-        [FormerlySerializedAs("U_Man")] public UnitManager uMan;
         [FormerlySerializedAs("Following_Path")] public bool followingPath;
-        [FormerlySerializedAs("Unit_Type")] [SerializeField] SharedTypes.UnitType unitType;
-        
-      
-       
-
-        public MobileUnit(string unitType)
-        {
-            
-        }
-
-        void Start()
-        {
-            uMan.allUnits.Add(this);
-            selectionGraphic.SetActive(false);
-            
-
-        }
-
+        //public Pathfinding_Grid pathfindingGrid;
         private void Update()
         {
             
@@ -72,6 +54,10 @@ namespace Units
         {
             followingPath = true;
             var currentWaypoint = currentPath[0];
+            if (unitType == SharedTypes.UnitType.Air)
+            {
+                currentWaypoint.y += 10;
+            }
             while (true)
             {
                 if (transform.position == currentWaypoint)
@@ -85,12 +71,16 @@ namespace Units
                         yield break;
                     }
                     currentWaypoint = currentPath[currentWaypointIndex];
+                    if (unitType == SharedTypes.UnitType.Air)
+                    {
+                        currentWaypoint.y += 10;
+                    }
                 }
                 Vector3 targetDir = currentWaypoint - this.transform.position;
                 float step = RotationSpeed * Time.deltaTime;
                 Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0F);
                 transform.rotation = Quaternion.LookRotation(newDir);
-
+                
                 transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
 
                 yield return null;
@@ -105,6 +95,7 @@ namespace Units
             target = orderQueue[0];
             orderQueue.RemoveAt(0);
             Update_Path();
+            
         }
 
     }

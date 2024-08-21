@@ -39,7 +39,7 @@ namespace Units
             {
                 _currentRequest = _requestQueue.Dequeue();// Also removes item from queue
                 _currentlyProcessingPath = true;
-                _pathfinding.Start_Pathfinding(_currentRequest.Start, _currentRequest.Target,_currentRequest.UnitType);
+                _pathfinding.Start_Pathfinding(_currentRequest.Start, _currentRequest.Target);
             }
         }
 
@@ -58,6 +58,7 @@ namespace Units
                 Process_Next();
             }
             //print("Currently " + _requestQueue.Count + " requests queued");
+            
         }
 
         public struct PathRequest
